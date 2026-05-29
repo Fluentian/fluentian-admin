@@ -72,7 +72,7 @@ export default function CurriculumImportPage() {
     <div className="space-y-8 max-w-5xl mx-auto pb-20">
       <PageHeader 
         title="Curriculum Import" 
-        description="Bulk upload courses, units, lessons, and questions using a CSV spreadsheet."
+        subtitle="Bulk upload courses, units, lessons, and questions using a CSV spreadsheet."
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

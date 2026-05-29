@@ -1,10 +1,10 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useCourse, useCourseUnits } from "@/lib/hooks/useCourses";
+import { useCourse, useCourseUnits, useDeleteCourse, useUpdateCourse } from "@/lib/hooks/useCourses";
 import { useLessons } from "@/lib/hooks/useLessons";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { 
@@ -24,16 +24,21 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { formatLevel, formatDate } from "@/lib/utils";
+import { formatLevel, formatDate, cn } from "@/lib/utils";
 import { useState } from "react";
 import { UnitForm } from "@/components/courses/UnitForm";
 import { useCreateUnit } from "@/lib/hooks/useCourses";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 export default function CourseDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const { data: course, isLoading: loadingCourse } = useCourse(id);
+  const { mutate: deleteCourse } = useDeleteCourse();
+  const { mutate: updateCourse, isPending: updatingCourse } = useUpdateCourse();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { data: units, isLoading: loadingUnits } = useCourseUnits(id);
   const { data: lessons, isLoading: loadingLessons } = useLessons({ course_id: id });
   
@@ -72,7 +77,11 @@ export default function CourseDetailPage() {
             Edit Course
           </Button>
         </Link>
-        <Button variant="destructive" className="gap-2">
+        <Button 
+          variant="destructive" 
+          className="gap-2"
+          onClick={() => setIsDeleteDialogOpen(true)}
+        >
           <Trash2 size={16} />
           Delete
         </Button>
@@ -189,14 +198,38 @@ export default function CourseDetailPage() {
 
           <Card className="border-none shadow-sm">
             <CardContent className="p-6 text-center space-y-2">
-              <p className="text-[13px] text-text-secondary">Ready to publish this course?</p>
-              <Button className="w-full h-10 bg-success hover:bg-success/90">
-                Publish Curriculum
+              <p className="text-[13px] text-text-secondary">
+                {course.is_published ? "This course is currently published." : "Ready to publish this course?"}
+              </p>
+              <Button 
+                className={cn(
+                  "w-full h-10 text-white font-medium",
+                  course.is_published ? "bg-amber-600 hover:bg-amber-700" : "bg-success hover:bg-success/90"
+                )}
+                onClick={() => updateCourse({ id, data: { is_published: !course.is_published } })}
+                disabled={updatingCourse}
+              >
+                {updatingCourse ? "Saving..." : course.is_published ? "Unpublish Curriculum" : "Publish Curriculum"}
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <ConfirmDialog 
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Delete Course?"
+        description="This action cannot be undone. All units, lessons, and progress data for this course will be permanently deleted."
+        onConfirm={() => {
+          deleteCourse(id, {
+            onSuccess: () => {
+              setIsDeleteDialogOpen(false);
+              router.push('/courses');
+            }
+          });
+        }}
+      />
     </div>
   );
 }

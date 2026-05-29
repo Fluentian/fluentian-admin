@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
     <div className="space-y-8 pb-20">
       <PageHeader 
         title="Deep Analytics Dashboard" 
-        description="Explore detailed user behavior, retention cohorts, and content performance metrics."
+        subtitle="Explore detailed user behavior, retention cohorts, and content performance metrics."
       />
 
       {/* Summary Cards */}
