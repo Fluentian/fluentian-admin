@@ -2,6 +2,7 @@
 
 import { LessonBlock } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useCallback, useMemo, memo } from "react";
 import { 
   GripVertical, 
   Trash2, 
@@ -27,7 +28,10 @@ interface BlockCardProps {
   onUpdate: (id: string, payload: any) => void;
 }
 
-export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
+function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
+  // Local state for editing - prevents re-renders while typing
+  const [localPayload, setLocalPayload] = useState(block.block_payload);
+  
   const {
     attributes,
     listeners,
@@ -37,20 +41,30 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
     isDragging,
   } = useSortable({ id: block.id });
 
-  const style = {
+  const style = useMemo(() => ({
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }), [transform, transition]);
 
-  const renderPayloadEditor = () => {
-    const p = block.block_payload as any;
+  // Debounced update - only sync to parent after user stops typing
+  const handleUpdateWithDebounce = useCallback((payload: any) => {
+    setLocalPayload(payload);
+    // Update parent with debounce (300ms)
+    const timer = setTimeout(() => {
+      onUpdate(block.id, payload);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [block.id, onUpdate]);
+
+  const renderPayloadEditor = useCallback(() => {
+    const p = localPayload as any;
 
     switch (block.block_kind) {
       case 'rich_text':
         return (
           <Textarea 
             value={p.content ?? ""} 
-            onChange={(e) => onUpdate(block.id, { ...p, content: e.target.value })}
+            onChange={(e) => handleUpdateWithDebounce({ ...p, content: e.target.value })}
             placeholder="Type your content here..."
             className="min-h-[100px] border-none focus-visible:ring-0 p-0 resize-none"
           />
@@ -62,7 +76,7 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
               <label className="text-[11px] font-bold text-text-muted uppercase">Rule</label>
               <Textarea 
                 value={p.rule ?? ""} 
-                onChange={(e) => onUpdate(block.id, { ...p, rule: e.target.value })}
+                onChange={(e) => handleUpdateWithDebounce({ ...p, rule: e.target.value })}
                 className="min-h-[60px]"
               />
             </div>
@@ -70,7 +84,7 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
               <label className="text-[11px] font-bold text-text-muted uppercase">Example (French)</label>
               <Input 
                 value={p.example ?? ""} 
-                onChange={(e) => onUpdate(block.id, { ...p, example: e.target.value })}
+                onChange={(e) => handleUpdateWithDebounce({ ...p, example: e.target.value })}
               />
             </div>
           </div>
@@ -82,14 +96,14 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
               <label className="text-[11px] font-bold text-text-muted uppercase">French</label>
               <Input 
                 value={p.target ?? ""} 
-                onChange={(e) => onUpdate(block.id, { ...p, target: e.target.value })}
+                onChange={(e) => handleUpdateWithDebounce({ ...p, target: e.target.value })}
               />
             </div>
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-text-muted uppercase">Translation</label>
               <Input 
                 value={p.base ?? ""} 
-                onChange={(e) => onUpdate(block.id, { ...p, base: e.target.value })}
+                onChange={(e) => handleUpdateWithDebounce({ ...p, base: e.target.value })}
               />
             </div>
           </div>
@@ -102,7 +116,7 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
             </label>
             <Textarea 
               value={p.hint ?? ""} 
-              onChange={(e) => onUpdate(block.id, { ...p, hint: e.target.value })}
+              onChange={(e) => handleUpdateWithDebounce({ ...p, hint: e.target.value })}
               placeholder="E.g. Think about the gender of the noun..."
             />
           </div>
@@ -110,9 +124,9 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
       default:
         return <p className="text-[12px] text-text-muted">Editor for {block.block_kind} not yet implemented.</p>;
     }
-  };
+  }, [localPayload, block.block_kind, handleUpdateWithDebounce]);
 
-  const getIcon = () => {
+  const getIcon = useCallback(() => {
     switch (block.block_kind) {
       case 'rich_text': return Type;
       case 'grammar_note': return BookMarked;
@@ -124,9 +138,9 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
       case 'cultural_note': return Globe;
       default: return Type;
     }
-  };
+  }, [block.block_kind]);
 
-  const Icon = getIcon();
+  const Icon = useMemo(() => getIcon(), [getIcon]);
 
   return (
     <div 
@@ -168,3 +182,15 @@ export function BlockCard({ block, onDelete, onUpdate }: BlockCardProps) {
     </div>
   );
 }
+
+export const BlockCard = memo(BlockCardComponent, (prevProps, nextProps) => {
+  // Custom comparison - only re-render if block.id or block.block_kind changed
+  return (
+    prevProps.block.id === nextProps.block.id &&
+    prevProps.block.block_kind === nextProps.block.block_kind &&
+    prevProps.onDelete === nextProps.onDelete &&
+    prevProps.onUpdate === nextProps.onUpdate
+  );
+});
+
+BlockCard.displayName = 'BlockCard';
