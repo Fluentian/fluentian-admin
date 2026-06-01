@@ -3,7 +3,7 @@
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { useAuthStore } from "@/lib/store/auth";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -13,19 +13,29 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isHydrated = useAuthStore((state) => state.isHydrated);
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    // Wait for Zustand hydration before checking auth
+    if (!isHydrated) return;
+
     if (!isAuthenticated) {
       Cookies.remove('accessToken');
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isHydrated, router]);
 
-  if (!isMounted) {
-    return null; // Or a full-page loader
+  // Show loading screen during hydration
+  if (!isHydrated) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#F8F7FC]">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto"></div>
+          <p className="text-text-secondary">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

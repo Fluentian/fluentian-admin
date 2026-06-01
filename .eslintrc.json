@@ -1,0 +1,12 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@next/next/no-html-link-for-pages": "error",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "prefer-const": "warn",
+    "eqeqeq": "warn"
+  }
+}

@@ -58,7 +58,7 @@ export default function NotificationsPage() {
               <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg flex gap-3">
                 <Info size={18} className="text-primary shrink-0 mt-0.5" />
                 <p className="text-[13px] text-primary/80">
-                  Broadcast messages will be sent as push notifications and appear in the student's in-app notification center.
+                  Broadcast messages will be sent as push notifications and appear in the student&apos;s in-app notification center.
                 </p>
               </div>
 

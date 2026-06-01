@@ -57,7 +57,7 @@ export default function EditLessonPage() {
     addBlock({
       lessonId: id,
       data: {
-        lesson_id: id,
+        lesson_id: id, // CRITICAL: Required by LessonBlockCreate type
         block_kind: kind,
         sequence_no: (lesson.blocks?.length || 0) + 1,
         block_payload: kind === 'rich_text' ? { content: '' } : {},

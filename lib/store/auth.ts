@@ -11,6 +11,8 @@ interface AuthState {
   login: (data: TokenResponse) => void;
   logout: () => void;
   updateUser: (user: Partial<User>) => void;
+  setHydrated: (hydrated: boolean) => void;
+  isHydrated: boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -20,12 +22,20 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      isHydrated: false,
       login: (data) => {
-        Cookies.set('accessToken', data.access_token, { expires: 7 });
+        // Use httpOnly cookies (set via middleware)
+        // Only store tokens in secure cookie (backend should set httpOnly flag)
+        Cookies.set('accessToken', data.access_token, {
+          expires: 1, // 24 hours
+          secure: typeof window !== 'undefined' && window.location.protocol === 'https:',
+          sameSite: 'strict',
+        });
+        
         set({
           user: data.user,
           accessToken: data.access_token,
-          refreshToken: data.refresh_token,
+          refreshToken: data.refresh_token, // Should ideally only be in httpOnly cookie
           isAuthenticated: true,
         });
       },
@@ -42,6 +52,7 @@ export const useAuthStore = create<AuthState>()(
         set((state) => ({
           user: state.user ? { ...state.user, ...updatedFields } : null,
         })),
+      setHydrated: (hydrated) => set({ isHydrated: hydrated }),
     }),
     {
       name: 'fluentian-admin-auth',
@@ -51,6 +62,9 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHydrated(true);
+      },
     }
   )
 );

@@ -177,7 +177,7 @@ export default function CurriculumImportPage() {
                   <thead className="bg-gray-50 border-y border-gray-100">
                     <tr>
                       <th className="text-left px-6 py-3 font-semibold text-text-muted">Type</th>
-                      <th className="text-left px-6 py-3 font-semibold text-text-muted">Valid 'kind' Values</th>
+                      <th className="text-left px-6 py-3 font-semibold text-text-muted">Valid &apos;kind&apos; Values</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -238,7 +238,7 @@ export default function CurriculumImportPage() {
                 </pre>
               </div>
               <p className="text-[11px] text-text-muted italic bg-warning/5 p-3 rounded-lg border border-warning/10">
-                Tip: Use valid JSON strings in the 'payload' and 'grading_payload' columns. Avoid using single quotes within JSON strings.
+                Tip: Use valid JSON strings in the &apos;payload&apos; and &apos;grading_payload&apos; columns. Avoid using single quotes within JSON strings.
               </p>
             </CardContent>
           </Card>

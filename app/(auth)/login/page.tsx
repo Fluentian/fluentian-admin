@@ -10,7 +10,7 @@ import { useAuthStore } from '@/lib/store/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import Cookies from 'js-cookie';
@@ -43,6 +43,12 @@ export default function LoginPage() {
     try {
       const response = await authApi.login(values.email, values.password);
       
+      if (!response || !response.user) {
+        setError('Invalid response from server');
+        setIsLoading(false);
+        return;
+      }
+
       if (response.user.role === 'student') {
         setError('This account does not have admin access.');
         setIsLoading(false);
@@ -55,8 +61,17 @@ export default function LoginPage() {
       Cookies.set('accessToken', response.access_token, { expires: 1 });
       
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+    } catch (err: unknown) {
+      let errorMessage = 'Invalid email or password';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'object' && err !== null && 'response' in err) {
+        const axiosError = err as any;
+        errorMessage = axiosError.response?.data?.message || axiosError.response?.data?.detail || errorMessage;
+      }
+      
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -65,7 +80,7 @@ export default function LoginPage() {
     <Card className="w-[400px] shadow-sm border-border">
       <CardHeader className="space-y-1 pt-8 pb-6">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center" aria-hidden="true">
             <span className="text-white font-bold text-xl">F</span>
           </div>
           <span className="text-[18px] font-semibold text-text-primary">Fluentian Admin</span>
@@ -75,9 +90,14 @@ export default function LoginPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" aria-label="Login form">
           {error && (
-            <Alert variant="destructive" className="bg-red-50 border-red-200 text-red-600 py-2">
+            <Alert 
+              variant="destructive" 
+              className="bg-red-50 border-red-200 text-red-600 py-2"
+              role="alert"
+              aria-live="polite"
+            >
               <AlertDescription className="text-[13px]">{error}</AlertDescription>
             </Alert>
           )}
@@ -88,11 +108,16 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="admin@fluentian.com"
+              aria-label="Email address"
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              aria-invalid={errors.email ? true : false}
               {...register('email')}
               className={errors.email ? 'border-red-500' : ''}
             />
             {errors.email && (
-              <p className="text-[12px] text-red-500">{errors.email.message}</p>
+              <p id="email-error" className="text-[12px] text-red-500" role="alert">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -102,24 +127,36 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
+                aria-label="Password"
+                aria-describedby={errors.password ? 'password-error' : undefined}
+                aria-invalid={errors.password ? true : false}
                 {...register('password')}
                 className={errors.password ? 'border-red-500' : ''}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-[12px] text-red-500">{errors.password.message}</p>
+              <p id="password-error" className="text-[12px] text-red-500" role="alert">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
-          <Button type="submit" className="w-full h-10 mt-2" disabled={isLoading}>
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sign in'}
+          <Button 
+            type="submit" 
+            className="w-full h-10 mt-2" 
+            disabled={isLoading}
+            aria-busy={isLoading}
+          >
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : 'Sign in'}
           </Button>
         </form>
       </CardContent>

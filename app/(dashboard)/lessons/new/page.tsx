@@ -36,7 +36,7 @@ function NewLessonForm() {
     <div className="space-y-6">
       {!unitId && (
         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg text-amber-700 text-[13px]">
-          Warning: You are creating a lesson without a parent unit. It's recommended to create lessons directly from the course unit view.
+          Warning: You are creating a lesson without a parent unit. It&apos;s recommended to create lessons directly from the course unit view.
         </div>
       )}
 

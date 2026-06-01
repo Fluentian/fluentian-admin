@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { studentsApi } from '../api/students';
 import { User } from '../types';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/api-error';
 
 export function useStudents(params?: { page?: number; size?: number; role?: string }) {
   return useQuery({
@@ -36,8 +37,8 @@ export function useUpdateStudent() {
       queryClient.invalidateQueries({ queryKey: ['students', id] });
       toast.success('Student updated');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update student');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }

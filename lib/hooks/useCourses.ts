@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { coursesApi } from '../api/courses';
 import { CourseCreate, CourseUpdate } from '../types';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/api-error';
 
 export function useCourses(params?: { page?: number; size?: number; is_published?: boolean }) {
   return useQuery({
@@ -26,8 +27,8 @@ export function useCreateCourse() {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       toast.success('Course created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create course');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -42,8 +43,8 @@ export function useUpdateCourse() {
       queryClient.invalidateQueries({ queryKey: ['courses', id] });
       toast.success('Course updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update course');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -56,8 +57,8 @@ export function useDeleteCourse() {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       toast.success('Course deleted successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete course');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -79,8 +80,8 @@ export function useCreateUnit() {
       queryClient.invalidateQueries({ queryKey: ['courses', courseId, 'units'] });
       toast.success('Unit created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create unit');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }

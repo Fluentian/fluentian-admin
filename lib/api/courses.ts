@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Course, CourseCreate, CourseUpdate, PaginatedResponse, PathUnit } from '@/lib/types';
+import { Course, CourseCreate, CourseUpdate, PaginatedResponse, PathUnit, PathUnitCreate } from '@/lib/types';
 
 export const coursesApi = {
   getCourses: async (params?: { page?: number; size?: number; is_published?: boolean }) => {
@@ -31,7 +31,7 @@ export const coursesApi = {
     return data;
   },
   
-  createUnit: async (courseId: string, data: any) => {
+  createUnit: async (courseId: string, data: PathUnitCreate) => {
     const { data: response } = await apiClient.post<PathUnit>(`/content/courses/${courseId}/units`, data);
     return response;
   },

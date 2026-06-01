@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { lessonsApi } from '../api/lessons';
 import { LessonCreate, LessonUpdate, LessonBlockCreate, QuestionCreate } from '../types';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/api-error';
 
 export function useLessons(params?: { page?: number; size?: number; course_id?: string; unit_id?: string }) {
   return useQuery({
@@ -27,8 +28,8 @@ export function useCreateLesson() {
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
       toast.success('Lesson created successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create lesson');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -43,8 +44,8 @@ export function useUpdateLesson() {
       queryClient.invalidateQueries({ queryKey: ['lessons', id] });
       toast.success('Lesson updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update lesson');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
@@ -81,7 +82,7 @@ export function useAddBlock() {
 export function useUpdateBlock() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ blockId, data, lessonId }: { blockId: string; data: Partial<LessonBlockCreate>; lessonId: string }) =>
+    mutationFn: ({ blockId, data, lessonId: _lessonId }: { blockId: string; data: Partial<LessonBlockCreate>; lessonId: string }) =>
       lessonsApi.updateBlock(blockId, data),
     onSuccess: (_, { lessonId }) => {
       queryClient.invalidateQueries({ queryKey: ['lessons', lessonId] });
