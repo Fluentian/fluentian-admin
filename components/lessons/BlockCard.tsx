@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 interface BlockCardProps {
   block: LessonBlock;
@@ -58,16 +59,36 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
 
   const renderPayloadEditor = useCallback(() => {
     const p = localPayload as any;
+    const renderTtsToggle = (label = "Read with TTS") => (
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-gray-50/60 px-3 py-2">
+        <div className="flex items-center gap-2">
+          <Volume2 size={14} className="text-primary" />
+          <div>
+            <p className="text-[12px] font-semibold text-text-primary">{label}</p>
+            <p className="text-[11px] text-text-muted">Use device text-to-speech instead of uploaded audio.</p>
+          </div>
+        </div>
+        <Switch
+          checked={p.tts_enabled === true}
+          onCheckedChange={(checked) =>
+            handleUpdateWithDebounce({ ...p, tts_enabled: checked })
+          }
+        />
+      </div>
+    );
 
     switch (block.block_kind) {
       case 'rich_text':
         return (
-          <Textarea 
-            value={p.content ?? ""} 
-            onChange={(e) => handleUpdateWithDebounce({ ...p, content: e.target.value })}
-            placeholder="Type your content here..."
-            className="min-h-[100px] border-none focus-visible:ring-0 p-0 resize-none"
-          />
+          <div className="space-y-3">
+            <Textarea
+              value={p.content ?? ""}
+              onChange={(e) => handleUpdateWithDebounce({ ...p, content: e.target.value })}
+              placeholder="Type your content here..."
+              className="min-h-[100px] border-none focus-visible:ring-0 p-0 resize-none"
+            />
+            {renderTtsToggle()}
+          </div>
         );
       case 'grammar_note':
         return (
@@ -87,25 +108,29 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
                 onChange={(e) => handleUpdateWithDebounce({ ...p, example: e.target.value })}
               />
             </div>
+            {renderTtsToggle("Read example with TTS")}
           </div>
         );
       case 'sentence_pair':
         return (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-text-muted uppercase">French</label>
-              <Input 
-                value={p.target ?? ""} 
-                onChange={(e) => handleUpdateWithDebounce({ ...p, target: e.target.value })}
-              />
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-text-muted uppercase">French</label>
+                <Input
+                  value={p.target ?? ""}
+                  onChange={(e) => handleUpdateWithDebounce({ ...p, target: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-text-muted uppercase">Translation</label>
+                <Input
+                  value={p.base ?? ""}
+                  onChange={(e) => handleUpdateWithDebounce({ ...p, base: e.target.value })}
+                />
+              </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-text-muted uppercase">Translation</label>
-              <Input 
-                value={p.base ?? ""} 
-                onChange={(e) => handleUpdateWithDebounce({ ...p, base: e.target.value })}
-              />
-            </div>
+            {renderTtsToggle("Read French text with TTS")}
           </div>
         );
       case 'ai_hint':

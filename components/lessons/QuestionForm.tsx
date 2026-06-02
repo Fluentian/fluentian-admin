@@ -1,6 +1,6 @@
 'use client';
 
-import { Question, QuestionKind } from "@/lib/types";
+import { Question } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,40 +22,95 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Plus, Trash2 } from "lucide-react";
 
 const questionSchema = z.object({
   question_kind: z.string(),
   sequence_no: z.number().min(1),
   prompt: z.string().min(1, "Prompt is required"),
-  options: z.string().optional(), // For MCQ
+  options: z.array(z.string()),
   correct_answer: z.string().min(1, "Correct answer is required"),
+}).superRefine((values, ctx) => {
+  if (!values.question_kind.startsWith("mcq")) return;
+
+  const filledOptions = values.options.map((option) => option.trim()).filter(Boolean);
+  if (filledOptions.length < 2) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Add at least two options",
+      path: ["options"],
+    });
+  }
+
+  if (!filledOptions.includes(values.correct_answer)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Select the correct answer from the options",
+      path: ["correct_answer"],
+    });
+  }
 });
 
 interface QuestionFormProps {
   initialData?: Partial<Question>;
-  onSubmit: (data: any) => void;
+  onSubmit: (_data: any) => void;
   isLoading?: boolean;
 }
 
 export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormProps) {
+  const initialOptions = (initialData?.prompt_payload as any)?.options;
+
   const form = useForm<z.infer<typeof questionSchema>>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
       question_kind: initialData?.question_kind || 'mcq_single',
       sequence_no: initialData?.sequence_no || 1,
       prompt: (initialData?.prompt_payload as any)?.question || "",
-      options: (initialData?.prompt_payload as any)?.options?.join("\n") || "",
+      options: Array.isArray(initialOptions) && initialOptions.length > 0
+        ? initialOptions.map((option) => String(option))
+        : ["", ""],
       correct_answer: (initialData?.grading_payload as any)?.correct_answer || "",
     },
   });
 
+  const questionKind = form.watch("question_kind");
+  const options = form.watch("options");
+  const isMultipleChoice = questionKind.startsWith("mcq");
+  const filledOptions = options.map((option) => option.trim()).filter(Boolean);
+
+  const addOption = () => {
+    form.setValue("options", [...options, ""], { shouldDirty: true });
+  };
+
+  const updateOption = (index: number, value: string) => {
+    const nextOptions = options.map((option, optionIndex) =>
+      optionIndex === index ? value : option
+    );
+    const currentCorrectAnswer = form.getValues("correct_answer");
+    form.setValue("options", nextOptions, { shouldDirty: true, shouldValidate: true });
+    if (currentCorrectAnswer && !nextOptions.map((option) => option.trim()).includes(currentCorrectAnswer)) {
+      form.setValue("correct_answer", "", { shouldDirty: true, shouldValidate: true });
+    }
+  };
+
+  const removeOption = (index: number) => {
+    if (options.length <= 2) return;
+    const removedOption = options[index]?.trim();
+    const nextOptions = options.filter((_, optionIndex) => optionIndex !== index);
+    form.setValue("options", nextOptions, { shouldDirty: true, shouldValidate: true });
+    if (removedOption && form.getValues("correct_answer") === removedOption) {
+      form.setValue("correct_answer", "", { shouldDirty: true, shouldValidate: true });
+    }
+  };
+
   const handleSubmit = (values: z.infer<typeof questionSchema>) => {
+    const cleanedOptions = values.options.map((option) => option.trim()).filter(Boolean);
     const payload = {
       question_kind: values.question_kind,
       sequence_no: values.sequence_no,
       prompt_payload: {
         question: values.prompt,
-        options: values.options ? values.options.split("\n").filter(Boolean) : [],
+        options: values.question_kind.startsWith("mcq") ? cleanedOptions : [],
       },
       grading_payload: {
         correct_answer: values.correct_answer,
@@ -105,35 +160,99 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
           )}
         />
 
-        {form.watch("question_kind").startsWith("mcq") && (
+        {isMultipleChoice && (
           <FormField
             control={form.control}
             name="options"
-            render={({ field }) => (
+            render={() => (
               <FormItem>
-                <FormLabel>Options (One per line)</FormLabel>
-                <FormControl>
-                  <Textarea {...field} placeholder="Option A&#10;Option B&#10;Option C" />
-                </FormControl>
+                <div className="flex items-center justify-between gap-3">
+                  <FormLabel>Options</FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-2"
+                    onClick={addOption}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add option
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {options.map((option, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <FormControl>
+                        <Input
+                          value={option}
+                          placeholder={`Option ${index + 1}`}
+                          onChange={(event) => updateOption(index, event.target.value)}
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 shrink-0 text-text-muted hover:bg-danger/10 hover:text-danger"
+                        onClick={() => removeOption(index)}
+                        disabled={options.length <= 2}
+                        aria-label={`Remove option ${index + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
         )}
 
-        <FormField
-          control={form.control}
-          name="correct_answer"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Correct Answer</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="The exact correct value" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {isMultipleChoice ? (
+          <FormField
+            control={form.control}
+            name="correct_answer"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Correct Answer</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={filledOptions.length === 0}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select from options" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {filledOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name="correct_answer"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Correct Answer</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="The exact correct value" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="pt-4">
           <Button type="submit" className="w-full" disabled={isLoading}>

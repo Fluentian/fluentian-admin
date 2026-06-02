@@ -1,6 +1,6 @@
 // ── Enums ──────────────────────────────────────────────────
 
-export type AppRole = 'student' | 'tutor' | 'admin' | 'moderator';
+export type AppRole = 'student' | 'tutor' | 'admin' | 'moderator' | 'teacher' | 'super_admin';
 
 export type ProficiencyLevel = 'a0' | 'a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2';
 
