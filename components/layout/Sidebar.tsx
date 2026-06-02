@@ -26,6 +26,7 @@ const navItems = [
   { label: 'Students', href: '/students', icon: Users, section: 'COMMUNITY', roles: ['super_admin', 'admin', 'moderator'] },
   { label: 'Opportunities', href: '/opportunities', icon: Globe, section: 'COMMUNITY', roles: ['super_admin', 'admin', 'moderator'] },
   { label: 'Notifications', href: '/notifications', icon: Bell, section: 'COMMUNITY', roles: ['super_admin', 'admin', 'moderator'] },
+  { label: 'User Management', href: '/users', icon: Users, section: 'ADMINISTRATION', roles: ['super_admin', 'admin'] },
 ];
 
 export function Sidebar() {
@@ -64,7 +65,7 @@ export function Sidebar() {
     );
   };
 
-  const sections = ['DASHBOARD', 'CONTENT', 'COMMUNITY'];
+  const sections = ['DASHBOARD', 'CONTENT', 'COMMUNITY', 'ADMINISTRATION'];
 
   return (
     <div className="w-[240px] h-screen bg-[#1A0A2E] flex flex-col fixed left-0 top-0 z-50">
