@@ -63,17 +63,15 @@ export default function UsersPage() {
     <>
       <PageHeader
         title="User Management"
-        description="Manage system users and their roles"
-        icon={Users}
-        action={
-          canCreateUsers && (
-            <Button onClick={() => setShowCreateModal(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add User
-            </Button>
-          )
-        }
-      />
+        subtitle="Manage system users and their roles"
+      >
+        {canCreateUsers && (
+          <Button onClick={() => setShowCreateModal(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add User
+          </Button>
+        )}
+      </PageHeader>
 
       <div className="space-y-6">
         {/* Stats Cards */}
