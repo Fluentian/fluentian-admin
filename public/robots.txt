@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /
+
+# Explicitly disallow common crawler paths
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /private/
+
+# Crawl delay
+Crawl-delay: 0
