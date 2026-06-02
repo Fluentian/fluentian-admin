@@ -58,18 +58,34 @@ interface QuestionFormProps {
 }
 
 export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormProps) {
-  const initialOptions = (initialData?.prompt_payload as any)?.options;
+  const promptPayload = (initialData?.prompt_payload as Record<string, unknown>) || {};
+  const gradingPayload = (initialData?.grading_payload as Record<string, unknown>) || {};
+  const initialOptionsRaw = promptPayload.options ?? promptPayload.mcqOptions;
+  const initialOptions = Array.isArray(initialOptionsRaw)
+    ? initialOptionsRaw.map((option) => String(option))
+    : [];
+
+  let initialCorrect = "";
+  if (gradingPayload.correct_answer != null) {
+    initialCorrect = String(gradingPayload.correct_answer);
+  } else if (promptPayload.mcqCorrectAnswer != null) {
+    initialCorrect = String(promptPayload.mcqCorrectAnswer);
+  } else if (
+    typeof gradingPayload.correct_index === "number" &&
+    initialOptions.length > gradingPayload.correct_index
+  ) {
+    initialCorrect = initialOptions[gradingPayload.correct_index as number];
+  }
 
   const form = useForm<z.infer<typeof questionSchema>>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
       question_kind: initialData?.question_kind || 'mcq_single',
       sequence_no: initialData?.sequence_no || 1,
-      prompt: (initialData?.prompt_payload as any)?.question || "",
-      options: Array.isArray(initialOptions) && initialOptions.length > 0
-        ? initialOptions.map((option) => String(option))
-        : ["", ""],
-      correct_answer: (initialData?.grading_payload as any)?.correct_answer || "",
+      prompt:
+        String(promptPayload.question || promptPayload.text || promptPayload.prompt || ""),
+      options: initialOptions.length > 0 ? initialOptions : ["", ""],
+      correct_answer: initialCorrect,
     },
   });
 
@@ -110,10 +126,13 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
       sequence_no: values.sequence_no,
       prompt_payload: {
         question: values.prompt,
+        text: values.prompt,
         options: values.question_kind.startsWith("mcq") ? cleanedOptions : [],
+        mcqOptions: values.question_kind.startsWith("mcq") ? cleanedOptions : [],
       },
       grading_payload: {
         correct_answer: values.correct_answer,
+        accepted_answers: [values.correct_answer],
       }
     };
     onSubmit(payload);

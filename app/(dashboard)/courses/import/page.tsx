@@ -53,11 +53,11 @@ export default function CurriculumImportPage() {
       // Lesson
       "2,lesson,Introducing Yourself,FR_A1_U1_L1,FR_A1_U1,vocabulary,1,10,20,{:},",
       // Blocks
-      "3,block,Intro Text,B1,FR_A1_U1_L1,text,1,,,{\"text\": \"In this lesson, we will learn how to say hello.\"},",
-      "3,block,Audio Example,B2,FR_A1_U1_L1,audio,2,,,{\"url\": \"https://example.com/hello.mp3\", \"caption\": \"Listen to the pronunciation\"},",
+      "3,block,Intro Text,B1,FR_A1_U1_L1,rich_text,1,,,{\"content\": \"In this lesson, we will learn how to say hello.\"},",
+      "3,block,Audio Example,B2,FR_A1_U1_L1,audio_clip,2,,,{\"url\": \"https://example.com/hello.mp3\", \"caption\": \"Listen to the pronunciation\"},",
       // Questions
-      "4,question,Translate Hello,Q1,FR_A1_U1_L1,translation,1,,,{\"text\": \"Hello\"},{\"answer\": \"Bonjour\"}",
-      "4,question,Greeting MCQ,Q2,FR_A1_U1_L1,mcq_single,2,,,{\"question\": \"Which of these is a greeting?\", \"options\": [\"Bonjour\", \"Pain\", \"Livre\"]},{\"correct_index\": 0}"
+      "4,question,Translate Hello,Q1,FR_A1_U1_L1,translation,1,,,{\"question\": \"Translate to French: Hello\", \"text\": \"Translate to French: Hello\"},{\"correct_answer\": \"Bonjour\", \"accepted_answers\": [\"Bonjour\"]}",
+      "4,question,Greeting MCQ,Q2,FR_A1_U1_L1,mcq_single,2,,,{\"question\": \"Which of these is a greeting?\", \"options\": [\"Bonjour\", \"Pain\", \"Livre\"]},{\"correct_answer\": \"Bonjour\"}"
     ].join("\n");
     
     const blob = new Blob([headers + examples], { type: 'text/csv' });
