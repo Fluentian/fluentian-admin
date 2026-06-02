@@ -12,7 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, HelpCircle } from 'lucide-react';
+import Link from 'next/link';
 import Cookies from 'js-cookie';
 
 const loginSchema = z.object({
@@ -158,6 +159,19 @@ export default function LoginPage() {
           >
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> : 'Sign in'}
           </Button>
+
+          <div className="pt-4 mt-2 border-t border-border text-center">
+            <Link
+              href="/help"
+              className="inline-flex items-center justify-center gap-2 text-[13px] text-primary hover:text-primary-dark font-medium transition-colors"
+            >
+              <HelpCircle size={16} aria-hidden="true" />
+              Help & learning guide
+            </Link>
+            <p className="text-[12px] text-text-muted mt-2">
+              Lesson types, quizzes, and how courses are structured — no sign-in required.
+            </p>
+          </div>
         </form>
       </CardContent>
     </Card>

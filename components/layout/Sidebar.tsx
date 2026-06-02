@@ -11,7 +11,8 @@ import {
   Bell, 
   Settings, 
   LogOut,
-  Library
+  Library,
+  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/store/auth';
@@ -27,6 +28,7 @@ const navItems = [
   { label: 'Opportunities', href: '/opportunities', icon: Globe, section: 'COMMUNITY', roles: ['super_admin', 'admin', 'moderator'] },
   { label: 'Notifications', href: '/notifications', icon: Bell, section: 'COMMUNITY', roles: ['super_admin', 'admin', 'moderator'] },
   { label: 'User Management', href: '/users', icon: Users, section: 'ADMINISTRATION', roles: ['super_admin', 'admin'] },
+  { label: 'Help & Guide', href: '/help', icon: HelpCircle, section: 'ADMINISTRATION' },
 ];
 
 export function Sidebar() {

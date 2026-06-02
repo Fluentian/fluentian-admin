@@ -10,8 +10,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // 2. If trying to access dashboard/routes without token, redirect to login
-  if (!pathname.startsWith('/login') && !token) {
+  // 2. Public routes (no sign-in required)
+  const publicPaths = ['/login', '/help'];
+  const isPublic = publicPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
+  // 3. If trying to access protected routes without token, redirect to login
+  if (!isPublic && !token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
