@@ -10,6 +10,7 @@ export type GuideSection = {
 };
 
 export const guideNav: GuideSection[] = [
+  { id: "teacher-guide", title: "Teacher's guide (step-by-step)" },
   { id: "overview", title: "How learning is organized" },
   { id: "levels", title: "Proficiency levels (A0–C2)" },
   { id: "units", title: "Unit types on the path" },

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { TeacherGuideSection } from '@/components/help/TeacherGuideSection';
 import {
   guideNav,
   learningHierarchy,
@@ -182,6 +183,8 @@ export function HelpGuide() {
 
         {/* Main content */}
         <main className="flex-1 min-w-0 space-y-16 pb-20">
+          <TeacherGuideSection />
+
           <Section
             id="overview"
             title="How learning is organized"
