@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { RouteGuard } from "@/components/auth/RouteGuard";
 import { useAuthStore } from "@/lib/store/auth";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -29,7 +30,7 @@ export default function DashboardLayout({
   // Show loading screen during hydration
   if (!isHydrated) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#F8F7FC]">
+      <div className="flex h-screen items-center justify-center bg-[var(--bg-page)]">
         <div className="text-center space-y-4">
           <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto"></div>
           <p className="text-text-secondary">Loading...</p>
@@ -39,13 +40,13 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F7FC]">
+    <div className="flex min-h-screen bg-[var(--bg-page)]">
       <Sidebar />
       <div className="flex-1 ml-[240px]">
         <Topbar />
         <main className="p-8 pb-12">
           <div className="max-w-[1200px] mx-auto">
-            {children}
+            <RouteGuard>{children}</RouteGuard>
           </div>
         </main>
       </div>

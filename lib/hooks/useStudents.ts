@@ -4,10 +4,14 @@ import { User } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils/api-error';
 
-export function useStudents(params?: { page?: number; size?: number; role?: string }) {
+export function useStudents(
+  params?: { page?: number; size?: number; role?: string },
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: ['students', params],
     queryFn: () => studentsApi.getStudents(params),
+    enabled: options?.enabled ?? true,
   });
 }
 

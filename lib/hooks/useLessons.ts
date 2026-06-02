@@ -4,10 +4,14 @@ import { LessonCreate, LessonUpdate, LessonBlockCreate, QuestionCreate } from '.
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils/api-error';
 
-export function useLessons(params?: { page?: number; size?: number; course_id?: string; unit_id?: string }) {
+export function useLessons(
+  params?: { page?: number; size?: number; course_id?: string; unit_id?: string },
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: ['lessons', params],
     queryFn: () => lessonsApi.getLessons(params),
+    enabled: options?.enabled ?? true,
   });
 }
 

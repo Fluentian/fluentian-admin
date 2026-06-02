@@ -39,6 +39,29 @@
     --ring: 108 59 245;
     --radius: 0.5rem;
   }
+
+  .dark {
+    --bg-page: #0E0B1A;
+    --bg-card: #1A1528;
+    --bg-sidebar: #0A0514;
+    --text-primary: #F3EEFF;
+    --text-secondary: #C4B5FD;
+    --text-muted: #9CA3AF;
+    --border: #3D2A7A;
+
+    --background: 14 11 26;
+    --foreground: 243 238 255;
+    --card: 26 21 40;
+    --card-foreground: 243 238 255;
+    --popover: 26 21 40;
+    --popover-foreground: 243 238 255;
+    --secondary: 30 16 64;
+    --secondary-foreground: 196 181 253;
+    --muted: 30 16 64;
+    --muted-foreground: 156 163 175;
+    --input: 61 42 122;
+    --ring: 139 92 246;
+  }
 }
 
 @layer base {
@@ -53,19 +76,19 @@
 
 /* Typography styles matching the spec */
 h1 {
-  @apply text-[24px] font-bold text-[#1A0A2E];
+  @apply text-[24px] font-bold text-text-primary;
 }
 
 h2 {
-  @apply text-[18px] font-semibold text-[#1A0A2E];
+  @apply text-[18px] font-semibold text-text-primary;
 }
 
 h3 {
-  @apply text-[16px] font-semibold text-[#1A0A2E];
+  @apply text-[16px] font-semibold text-text-primary;
 }
 
 p, body {
-  @apply text-[14px] font-normal text-[#1A0A2E];
+  @apply text-[14px] font-normal text-text-primary;
 }
 
 .label-caption {

@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Eye, EyeOff, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import { getDefaultRouteForRole } from '@/lib/rbac';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -61,7 +62,7 @@ export default function LoginPage() {
       // Set cookie for middleware
       Cookies.set('accessToken', response.access_token, { expires: 1 });
       
-      router.push('/dashboard');
+      router.push(getDefaultRouteForRole(response.user.role));
     } catch (err: unknown) {
       let errorMessage = 'Invalid email or password';
       

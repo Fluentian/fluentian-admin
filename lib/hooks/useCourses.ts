@@ -4,10 +4,14 @@ import { CourseCreate, CourseUpdate } from '../types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '../utils/api-error';
 
-export function useCourses(params?: { page?: number; size?: number; is_published?: boolean }) {
+export function useCourses(
+  params?: { page?: number; size?: number; is_published?: boolean },
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: ['courses', params],
     queryFn: () => coursesApi.getCourses(params),
+    enabled: options?.enabled ?? true,
   });
 }
 

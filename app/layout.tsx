@@ -40,8 +40,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={outfit.variable}>
-      <body className="font-sans antialiased text-slate-900">
+    <html lang="en" className={outfit.variable} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('fluentian-admin-theme');if(!s)return;var p=JSON.parse(s);if(p&&p.state&&p.state.isDark)document.documentElement.classList.add('dark')}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased bg-[var(--bg-page)] text-foreground">
         <ErrorBoundary>
           <Providers>
             {children}
