@@ -2,7 +2,7 @@
 
 import { LessonBlock } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState, useCallback, useMemo, memo } from "react";
+import { useState, useCallback, useMemo, useEffect, memo } from "react";
 import { 
   GripVertical, 
   Trash2, 
@@ -32,6 +32,27 @@ interface BlockCardProps {
 function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
   // Local state for editing - prevents re-renders while typing
   const [localPayload, setLocalPayload] = useState(block.block_payload);
+
+  useEffect(() => {
+    setLocalPayload(block.block_payload);
+  }, [block.block_payload]);
+
+  useEffect(() => {
+    const p = block.block_payload as any;
+    if (
+      block.block_kind === "rich_text" &&
+      p.tts_enabled === true &&
+      p.tts_language !== "en-US"
+    ) {
+      const normalized = {
+        ...p,
+        tts_language: "en-US",
+        tts_text: p.content ?? p.tts_text ?? "",
+      };
+      setLocalPayload(normalized);
+      onUpdate(block.id, normalized);
+    }
+  }, [block.id, block.block_kind, block.block_payload, onUpdate]);
   
   const {
     attributes,
@@ -59,19 +80,45 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
 
   const renderPayloadEditor = useCallback(() => {
     const p = localPayload as any;
-    const renderTtsToggle = (label = "Read with TTS") => (
+    const withTts = (
+      payload: any,
+      checked: boolean,
+      language: string,
+      text?: string
+    ) => {
+      if (!checked) {
+        return { ...payload, tts_enabled: false };
+      }
+
+      return {
+        ...payload,
+        tts_enabled: true,
+        tts_language: language,
+        tts_text: text ?? payload.tts_text ?? "",
+      };
+    };
+
+    const renderTtsToggle = (
+      label = "Read with TTS",
+      language = "fr-FR",
+      text?: string
+    ) => (
       <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-gray-50/60 px-3 py-2">
         <div className="flex items-center gap-2">
           <Volume2 size={14} className="text-primary" />
           <div>
             <p className="text-[12px] font-semibold text-text-primary">{label}</p>
-            <p className="text-[11px] text-text-muted">Use device text-to-speech instead of uploaded audio.</p>
+            <p className="text-[11px] text-text-muted">
+              {language === "en-US"
+                ? "Reads this English explanation with an English voice."
+                : "Reads the French text with a French voice."}
+            </p>
           </div>
         </div>
         <Switch
           checked={p.tts_enabled === true}
           onCheckedChange={(checked) =>
-            handleUpdateWithDebounce({ ...p, tts_enabled: checked })
+            handleUpdateWithDebounce(withTts(p, checked, language, text))
           }
         />
       </div>
@@ -83,11 +130,20 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
           <div className="space-y-3">
             <Textarea
               value={p.content ?? ""}
-              onChange={(e) => handleUpdateWithDebounce({ ...p, content: e.target.value })}
+              onChange={(e) => {
+                const content = e.target.value;
+                handleUpdateWithDebounce({
+                  ...p,
+                  content,
+                  ...(p.tts_enabled === true
+                    ? { tts_language: "en-US", tts_text: content }
+                    : {}),
+                });
+              }}
               placeholder="Type your content here..."
               className="min-h-[100px] border-none focus-visible:ring-0 p-0 resize-none"
             />
-            {renderTtsToggle()}
+            {renderTtsToggle("Read English with TTS", "en-US", p.content ?? "")}
           </div>
         );
       case 'grammar_note':
@@ -108,7 +164,7 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
                 onChange={(e) => handleUpdateWithDebounce({ ...p, example: e.target.value })}
               />
             </div>
-            {renderTtsToggle("Read example with TTS")}
+            {renderTtsToggle("Read example with TTS", "fr-FR", p.example ?? "")}
           </div>
         );
       case 'sentence_pair':
@@ -130,7 +186,7 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
                 />
               </div>
             </div>
-            {renderTtsToggle("Read French text with TTS")}
+            {renderTtsToggle("Read French text with TTS", "fr-FR", p.target ?? "")}
           </div>
         );
       case 'ai_hint':
@@ -209,10 +265,12 @@ function BlockCardComponent({ block, onDelete, onUpdate }: BlockCardProps) {
 }
 
 export const BlockCard = memo(BlockCardComponent, (prevProps, nextProps) => {
-  // Custom comparison - only re-render if block.id or block.block_kind changed
+  // Re-render when the saved payload changes so TTS language fixes refresh.
   return (
     prevProps.block.id === nextProps.block.id &&
     prevProps.block.block_kind === nextProps.block.block_kind &&
+    prevProps.block.sequence_no === nextProps.block.sequence_no &&
+    prevProps.block.block_payload === nextProps.block.block_payload &&
     prevProps.onDelete === nextProps.onDelete &&
     prevProps.onUpdate === nextProps.onUpdate
   );

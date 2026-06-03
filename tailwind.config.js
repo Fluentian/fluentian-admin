@@ -20,6 +20,11 @@ module.exports = {
         ring: "var(--primary)",
         background: "var(--bg-page)",
         foreground: "var(--text-primary)",
+        text: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
+        },
         primary: {
           DEFAULT: "var(--primary)",
           light: "var(--primary-light)",
