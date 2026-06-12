@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Notification, NotificationCreate, PaginatedResponse } from '@/lib/types';
+import { MessageResponse, Notification, NotificationCreate, PaginatedResponse } from '@/lib/types';
 
 export const notificationsApi = {
   getNotifications: async (params?: { page?: number; size?: number }) => {
@@ -8,7 +8,7 @@ export const notificationsApi = {
   },
 
   sendNotification: async (data: NotificationCreate) => {
-    const { data: response } = await apiClient.post<Notification>('/notifications', data);
+    const { data: response } = await apiClient.post<MessageResponse>('/notifications', data);
     return response;
   },
 };

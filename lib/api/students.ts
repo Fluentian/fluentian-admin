@@ -19,13 +19,9 @@ export const studentsApi = {
   },
 
   getStudentProgress: async (id: string) => {
-    const { data: lessons } = await apiClient.get<PaginatedResponse<UserLessonProgress>>('/progress/me/lessons', {
-       params: { user_id: id } // Assuming the backend supports filtering by user_id for admins
-    });
-    const { data: units } = await apiClient.get<UserUnitProgress[]>('/progress/me/units', {
-       params: { user_id: id }
-    });
-    return { lessons: lessons.items, units };
+    const { data: lessons } = await apiClient.get<PaginatedResponse<UserLessonProgress>>(`/progress/users/${id}/lessons`);
+    const { data: units } = await apiClient.get<PaginatedResponse<UserUnitProgress>>(`/progress/users/${id}/units`);
+    return { lessons: lessons.items, units: units.items };
   },
 
   updateStudent: async (id: string, data: Partial<User>) => {

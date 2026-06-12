@@ -2,7 +2,7 @@
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Send, Bell, History, Info } from "lucide-react";
+import { Send, History, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,12 +25,12 @@ export default function NotificationsPage() {
 
   const { mutate: sendNotification, isPending } = useMutation({
     mutationFn: () => notificationsApi.sendNotification({
-      user_id: "global", // Backend special keyword for all students
+      user_id: "global",
       title,
       body
     }),
-    onSuccess: () => {
-      toast.success("Notification sent to all students");
+    onSuccess: (response) => {
+      toast.success(response.detail ?? "Notification sent to all students");
       setTitle("");
       setBody("");
       refetch();
@@ -42,7 +42,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader title="Notifications" subtitle="Send announcements and push alerts to students." />
+      <PageHeader title="Notifications" subtitle="Broadcast in-app announcements to students." />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Send Form */}
@@ -58,7 +58,7 @@ export default function NotificationsPage() {
               <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg flex gap-3">
                 <Info size={18} className="text-primary shrink-0 mt-0.5" />
                 <p className="text-[13px] text-primary/80">
-                  Broadcast messages will be sent as push notifications and appear in the student&apos;s in-app notification center.
+                  Broadcast messages appear in each eligible student&apos;s in-app notification inbox. Students can mark them read in the mobile app.
                 </p>
               </div>
 
@@ -101,7 +101,7 @@ export default function NotificationsPage() {
             <CardHeader className="border-b">
               <CardTitle className="text-[15px] flex items-center gap-2">
                 <History size={16} className="text-text-muted" />
-                Recent History
+                Recent Inbox History
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">

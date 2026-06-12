@@ -316,6 +316,11 @@ export interface NotificationCreate {
   body: string;
 }
 
+export interface MessageResponse {
+  message: string;
+  detail?: string | null;
+}
+
 // ── Opportunity Board ─────────────────────────────────────────
 
 export interface OpportunityPost {

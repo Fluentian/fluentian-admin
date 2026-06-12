@@ -1,12 +1,11 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { PageHeader } from "@/components/layout/PageHeader";
 import { useStudent, useStudentProgress } from "@/lib/hooks/useStudents";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Mail, ShieldAlert, Award, Calendar, Flame } from "lucide-react";
+import { ChevronLeft, Mail, ShieldAlert, Award, Calendar } from "lucide-react";
 import { formatLevel, formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 
@@ -30,6 +29,10 @@ export default function StudentDetailPage() {
     return <div className="text-center py-12">Student not found.</div>;
   }
 
+  const displayName = student.profile?.display_name || student.username;
+  const initials = displayName.slice(0, 2).toUpperCase();
+  const completedUnits = progress?.units.filter((unit) => unit.is_completed).length ?? 0;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4">
@@ -45,17 +48,16 @@ export default function StudentDetailPage() {
           <Card className="border-none shadow-sm text-center pt-8">
             <CardContent className="p-6">
               <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[32px] font-bold mx-auto mb-4">
-                {student.username.substring(0, 2).toUpperCase()}
+                {initials}
               </div>
-              <h2 className="text-[20px] font-bold text-text-primary">{student.username}</h2>
+              <h2 className="text-[20px] font-bold text-text-primary">{displayName}</h2>
               <p className="text-[14px] text-text-secondary mb-6">{student.email}</p>
               
               <div className="flex items-center justify-center gap-2 mb-8">
                 <StatusBadge status="active" />
-                <StatusBadge status="pro" />
               </div>
 
-              <div className="grid grid-cols-2 gap-4 border-t pt-6">
+              <div className="grid grid-cols-3 gap-4 border-t pt-6">
                 <div className="text-center">
                   <p className="text-[20px] font-bold text-text-primary">{student.streak_days}</p>
                   <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Day Streak</p>
@@ -63,6 +65,10 @@ export default function StudentDetailPage() {
                 <div className="text-center">
                   <p className="text-[20px] font-bold text-text-primary">{student.xp_total.toLocaleString()}</p>
                   <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Total XP</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[20px] font-bold text-text-primary">{completedUnits}</p>
+                  <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Units</p>
                 </div>
               </div>
             </CardContent>
@@ -127,7 +133,7 @@ export default function StudentDetailPage() {
                         </div>
                         <div>
                           <p className="text-[14px] font-semibold text-text-primary">Lesson ID: {p.lesson_id}</p>
-                          <p className="text-[12px] text-text-muted">Mastery: {p.mastery_score}%</p>
+                          <p className="text-[12px] text-text-muted">Mastery: {Math.round(p.mastery_score * 100)}%</p>
                         </div>
                       </div>
                       <div className="text-right">
