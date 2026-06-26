@@ -227,6 +227,7 @@ export interface Question {
   lesson_id: string;
   question_kind: QuestionKind;
   sequence_no: number;
+  difficulty?: number;
   prompt_payload: Record<string, unknown>;
   grading_payload: Record<string, unknown>;
   created_at: string;
@@ -236,6 +237,7 @@ export interface QuestionCreate {
   lesson_id: string;
   question_kind: QuestionKind;
   sequence_no: number;
+  difficulty?: number;
   prompt_payload: Record<string, unknown>;
   grading_payload: Record<string, unknown>;
 }

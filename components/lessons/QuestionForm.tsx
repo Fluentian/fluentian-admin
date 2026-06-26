@@ -27,6 +27,7 @@ import { Plus, Trash2 } from "lucide-react";
 const questionSchema = z.object({
   question_kind: z.string(),
   sequence_no: z.number().min(1),
+  difficulty: z.number().min(1).max(5).default(1),
   prompt: z.string().min(1, "Prompt is required"),
   options: z.array(z.string()),
   correct_answer: z.string().min(1, "Correct answer is required"),
@@ -82,6 +83,7 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
     defaultValues: {
       question_kind: initialData?.question_kind || 'mcq_single',
       sequence_no: initialData?.sequence_no || 1,
+      difficulty: initialData?.difficulty || 1,
       prompt:
         String(promptPayload.question || promptPayload.text || promptPayload.prompt || ""),
       options: initialOptions.length > 0 ? initialOptions : ["", ""],
@@ -124,6 +126,7 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
     const payload = {
       question_kind: values.question_kind,
       sequence_no: values.sequence_no,
+      difficulty: values.difficulty,
       prompt_payload: {
         question: values.prompt,
         text: values.prompt,
@@ -158,6 +161,31 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
                   <SelectItem value="mcq_multi">Multiple Choice (Multiple)</SelectItem>
                   <SelectItem value="fill_blank">Fill in the Blank</SelectItem>
                   <SelectItem value="translation">Translation</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="difficulty"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Difficulty</FormLabel>
+              <Select onValueChange={(val) => field.onChange(parseInt(val, 10))} defaultValue={field.value.toString()}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select difficulty level" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="1">Level 1 (Easiest)</SelectItem>
+                  <SelectItem value="2">Level 2</SelectItem>
+                  <SelectItem value="3">Level 3</SelectItem>
+                  <SelectItem value="4">Level 4</SelectItem>
+                  <SelectItem value="5">Level 5 (Hardest)</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
