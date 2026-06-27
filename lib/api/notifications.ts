@@ -11,4 +11,9 @@ export const notificationsApi = {
     const { data: response } = await apiClient.post<MessageResponse>('/notifications', data);
     return response;
   },
+
+  triggerDailyReminders: async () => {
+    const { data: response } = await apiClient.post<MessageResponse>('/notifications/trigger-reminders');
+    return response;
+  },
 };

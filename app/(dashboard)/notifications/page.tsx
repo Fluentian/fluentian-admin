@@ -2,7 +2,7 @@
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Send, History, Info } from "lucide-react";
+import { BellRing, Send, History, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +40,17 @@ export default function NotificationsPage() {
     }
   });
 
+  const { mutate: triggerReminders, isPending: isTriggeringReminders } = useMutation({
+    mutationFn: () => notificationsApi.triggerDailyReminders(),
+    onSuccess: (response) => {
+      toast.success(response.detail ?? "Daily reminders triggered");
+      refetch();
+    },
+    onError: () => {
+      toast.error("Failed to trigger daily reminders");
+    }
+  });
+
   return (
     <div className="space-y-8">
       <PageHeader title="Notifications" subtitle="Broadcast in-app announcements to students." />
@@ -60,6 +71,23 @@ export default function NotificationsPage() {
                 <p className="text-[13px] text-primary/80">
                   Broadcast messages appear in each eligible student&apos;s in-app notification inbox. Students can mark them read in the mobile app.
                 </p>
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => triggerReminders()}
+                  disabled={isTriggeringReminders}
+                  className="gap-2 h-9"
+                >
+                  {isTriggeringReminders ? (
+                    <LoadingSpinner />
+                  ) : (
+                    <BellRing size={16} />
+                  )}
+                  Trigger Daily Reminders
+                </Button>
               </div>
 
               <div className="space-y-2">
