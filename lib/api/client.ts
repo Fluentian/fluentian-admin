@@ -102,20 +102,20 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Attempt to refresh token (implement backend refresh endpoint)
+        // Rotate both tokens through the backend refresh endpoint.
         const refreshToken = useAuthStore.getState().refreshToken;
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
 
-        // TODO: Uncomment when backend refresh endpoint is ready
-        // const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refresh_token: refreshToken });
-        // useAuthStore.getState().login(data);
-        // processQueue(null, data.access_token);
-        // return apiClient(originalRequest);
-
-        // For now, logout on 401
-        throw new Error('Token expired');
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          refresh_token: refreshToken,
+        });
+        useAuthStore.getState().login(data);
+        processQueue(null, data.access_token);
+        originalRequest.headers = originalRequest.headers ?? {};
+        originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+        return apiClient(originalRequest);
       } catch (err) {
         processQueue(err, null);
         useAuthStore.getState().logout();

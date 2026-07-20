@@ -8,6 +8,8 @@ import {
   Bell,
   Library,
   HelpCircle,
+  Compass,
+  Radio,
 } from 'lucide-react';
 import type { AppRole } from '@/lib/types';
 
@@ -40,6 +42,12 @@ export const sidebarNavItems: SidebarNavItem[] = [
     icon: BookOpen,
     section: 'CONTENT',
     roles: ['super_admin', 'admin', 'teacher'],
+  },
+  {
+    label: 'Explore Content', href: '/explore-content', icon: Compass, section: 'CONTENT', roles: ['super_admin', 'admin', 'teacher'],
+  },
+  {
+    label: 'Live Rooms', href: '/live-rooms', icon: Radio, section: 'COMMUNITY', roles: ['super_admin', 'admin'],
   },
   {
     label: 'Students',
