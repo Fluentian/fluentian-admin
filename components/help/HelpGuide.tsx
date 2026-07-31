@@ -110,7 +110,7 @@ export function HelpGuide() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8F7FC]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-white/90 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
@@ -140,7 +140,7 @@ export function HelpGuide() {
       </header>
 
       {/* Hero */}
-      <div className="bg-[#1A0A2E] text-white">
+      <div className="bg-primary-dark text-white">
         <div className="max-w-6xl mx-auto px-6 py-14 md:py-16">
           <div className="flex items-center gap-2 text-primary-light/80 text-[12px] font-semibold uppercase tracking-wider mb-4">
             <HelpCircle size={14} />

@@ -139,7 +139,7 @@ export default function CourseDetailPage() {
                       <div className="space-y-2">
                         {unitLessons.length > 0 ? (
                           unitLessons.sort((a,b) => a.sequence_no - b.sequence_no).map((lesson) => (
-                            <div key={lesson.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-[#F8F7FC] group transition-colors">
+                            <div key={lesson.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-background group transition-colors">
                               <div className="flex items-center gap-3">
                                 <span className="text-[12px] font-medium text-text-muted w-4">{lesson.sequence_no}</span>
                                 <BookOpen size={16} className="text-text-muted" />

@@ -5,62 +5,65 @@
 @layer base {
   :root {
     /* Design System Colors */
-    --primary: #6C3BF5;
-    --primary-light: #F3EEFF;
-    --primary-dark: #4E22D4;
-    --accent: #F97316;
+    --primary: #0A3B6A;
+    --primary-light: #2C5E90;
+    --primary-dark: #072D52;
+    --brand-secondary: #259291;
+    --secondary-light: #4CB8B3;
+    --accent: #33C8C0;
     --success: #22C55E;
     --warning: #F59E0B;
-    --danger: #EF4444;
-    --bg-page: #F8F7FC;
+    --danger: #DC2626;
+    --info: #0EA5E9;
+    --bg-page: #F5F8FA;
     --bg-card: #FFFFFF;
-    --bg-sidebar: #1A0A2E;
-    --text-primary: #1A0A2E;
+    --bg-sidebar: #072D52;
+    --text-primary: #072D52;
     --text-secondary: #6B7280;
     --text-muted: #9CA3AF;
     --border: #E5E7EB;
 
     /* shadcn/ui requirement mappings */
     --background: 255 255 255;
-    --foreground: 26 10 46;
+    --foreground: 7 45 82;
     --card: 255 255 255;
-    --card-foreground: 26 10 46;
+    --card-foreground: 7 45 82;
     --popover: 255 255 255;
-    --popover-foreground: 26 10 46;
+    --popover-foreground: 7 45 82;
     --primary-foreground: 255 255 255;
-    --secondary: 243 244 246;
-    --secondary-foreground: 107 114 128;
+    --secondary: 37 146 145;
+    --secondary-foreground: 4 30 54;
     --muted: 243 244 246;
     --muted-foreground: 156 163 175;
-    --accent-foreground: 255 255 255;
-    --destructive: 239 68 68;
+    --accent-foreground: 7 45 82;
+    --destructive: 220 38 38;
     --destructive-foreground: 255 255 255;
     --input: 229 231 235;
-    --ring: 108 59 245;
+    --ring: 10 59 106;
     --radius: 0.5rem;
   }
 
   .dark {
-    --bg-page: #0E0B1A;
-    --bg-card: #1A1528;
-    --bg-sidebar: #0A0514;
-    --text-primary: #F3EEFF;
-    --text-secondary: #C4B5FD;
+    --bg-page: #041E36;
+    --bg-card: #072D52;
+    --bg-sidebar: #041E36;
+    --text-primary: #EAF2F8;
+    --text-secondary: #A9C2D8;
     --text-muted: #9CA3AF;
-    --border: #3D2A7A;
+    --border: #2C5E90;
 
-    --background: 14 11 26;
-    --foreground: 243 238 255;
-    --card: 26 21 40;
-    --card-foreground: 243 238 255;
-    --popover: 26 21 40;
-    --popover-foreground: 243 238 255;
-    --secondary: 30 16 64;
-    --secondary-foreground: 196 181 253;
-    --muted: 30 16 64;
+    --background: 4 30 54;
+    --foreground: 234 242 248;
+    --card: 7 45 82;
+    --card-foreground: 234 242 248;
+    --popover: 7 45 82;
+    --popover-foreground: 234 242 248;
+    --secondary: 37 146 145;
+    --secondary-foreground: 4 30 54;
+    --muted: 10 59 106;
     --muted-foreground: 156 163 175;
-    --input: 61 42 122;
-    --ring: 139 92 246;
+    --input: 44 94 144;
+    --ring: 76 184 179;
   }
 }
 

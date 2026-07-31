@@ -358,7 +358,7 @@ export function TeacherGuideSection() {
         </Accordion>
       </div>
 
-      <Card className="border-primary/20 bg-[#1A0A2E] text-white shadow-lg">
+      <Card className="border-primary/20 bg-primary-dark text-white shadow-lg">
         <CardContent className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="font-bold text-[16px] mb-1">Ready to build?</p>
@@ -366,7 +366,7 @@ export function TeacherGuideSection() {
               Start with Courses, add a unit, then add your first lesson and open the editor.
             </p>
           </div>
-          <Button asChild className="bg-white text-[#1A0A2E] hover:bg-white/90 shrink-0 gap-2">
+          <Button asChild className="bg-white text-primary-dark hover:bg-white/90 shrink-0 gap-2">
             <Link href="/courses">
               Go to Courses
               <ArrowRight size={16} />
