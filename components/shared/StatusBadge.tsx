@@ -20,7 +20,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     label = s.charAt(0).toUpperCase() + s.slice(1);
   } else if (s === 'pro') {
     return (
-      <Badge className={cn("bg-[#6C3BF5]/10 text-[#6C3BF5] border-transparent hover:bg-[#6C3BF5]/10", className)}>
+      <Badge className={cn("bg-primary/10 text-primary border-transparent hover:bg-primary/10", className)}>
         Pro
       </Badge>
     );

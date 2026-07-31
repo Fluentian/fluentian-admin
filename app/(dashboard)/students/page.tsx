@@ -44,7 +44,7 @@ export default function StudentsPage() {
       header: "Level",
       accessorKey: "current_level",
       cell: ({ row }) => (
-        <span className="bg-[#1A0A2E] text-white text-[11px] font-bold px-2 py-0.5 rounded">
+        <span className="bg-primary-dark text-white text-[11px] font-bold px-2 py-0.5 rounded">
           {formatLevel(row.original.current_level)}
         </span>
       )

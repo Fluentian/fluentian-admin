@@ -35,7 +35,7 @@ import {
   Area
 } from 'recharts';
 
-const COLORS = ['#6C3BF5', '#9F7AEA', '#B794F4', '#E9D8FD'];
+const COLORS = ['#0A3B6A', '#259291', '#33C8C0', '#2C5E90'];
 
 export default function AnalyticsPage() {
   const { data, isLoading } = useQuery({
@@ -97,8 +97,8 @@ export default function AnalyticsPage() {
               <AreaChart data={timeline.activity}>
                 <defs>
                   <linearGradient id="colorStarted" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6C3BF5" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#6C3BF5" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#0A3B6A" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#0A3B6A" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
@@ -113,7 +113,7 @@ export default function AnalyticsPage() {
                 <Tooltip 
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
-                <Area type="monotone" dataKey="started" stroke="#6C3BF5" fillOpacity={1} fill="url(#colorStarted)" strokeWidth={3} />
+                <Area type="monotone" dataKey="started" stroke="#0A3B6A" fillOpacity={1} fill="url(#colorStarted)" strokeWidth={3} />
                 <Area type="monotone" dataKey="completed" stroke="#10b981" fillOpacity={0} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
                 />
                 <Bar 
                   dataKey="count" 
-                  fill="#6C3BF5" 
+                  fill="#0A3B6A" 
                   radius={[0, 4, 4, 0]} 
                   barSize={32}
                   label={{ position: 'right', fill: '#64748b', fontSize: 12 }}

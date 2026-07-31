@@ -54,10 +54,10 @@ export function Sidebar() {
   const sections = ['CONTENT', 'COMMUNITY', 'ADMINISTRATION'] as const;
 
   return (
-    <div className="w-[240px] h-screen bg-[#1A0A2E] flex flex-col fixed left-0 top-0 z-50">
+    <div className="w-[240px] h-screen bg-primary-dark flex flex-col fixed left-0 top-0 z-50">
       <div className="p-6">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#6C3BF5] rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-xl">F</span>
           </div>
           <div className="flex flex-col">

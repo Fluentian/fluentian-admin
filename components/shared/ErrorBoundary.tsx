@@ -46,7 +46,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorStat
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center min-h-screen bg-[#F8F7FC] px-4">
+        <div className="flex items-center justify-center min-h-screen bg-background px-4">
           <div className="max-w-md w-full space-y-6 text-center">
             <div className="flex justify-center">
               <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">

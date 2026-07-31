@@ -32,8 +32,9 @@ module.exports = {
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#F3F4F6",
-          foreground: "var(--text-secondary)",
+          DEFAULT: "var(--brand-secondary)",
+          light: "var(--secondary-light)",
+          foreground: "#041E36",
         },
         destructive: {
           DEFAULT: "var(--danger)",
@@ -45,7 +46,7 @@ module.exports = {
         },
         accent: {
           DEFAULT: "var(--accent)",
-          foreground: "#FFFFFF",
+          foreground: "var(--primary-dark)",
         },
         success: {
           DEFAULT: "var(--success)",
@@ -58,6 +59,10 @@ module.exports = {
         danger: {
           DEFAULT: "var(--danger)",
           foreground: "#FFFFFF",
+        },
+        info: {
+          DEFAULT: "var(--info)",
+          foreground: "var(--primary-dark)",
         },
         popover: {
           DEFAULT: "var(--bg-card)",
