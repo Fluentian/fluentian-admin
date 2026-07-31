@@ -123,6 +123,17 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
 
   const handleSubmit = (values: z.infer<typeof questionSchema>) => {
     const cleanedOptions = values.options.map((option) => option.trim()).filter(Boolean);
+    const answerWords = values.correct_answer
+      .replace(/[.,!?;:]/g, "")
+      .split(/\s+/)
+      .map((word) => word.trim())
+      .filter(Boolean);
+    const isWordAssembly = values.question_kind === "translation";
+    const questionOptions = values.question_kind.startsWith("mcq")
+      ? cleanedOptions
+      : isWordAssembly
+        ? answerWords
+        : [];
     const payload = {
       question_kind: values.question_kind,
       sequence_no: values.sequence_no,
@@ -130,8 +141,9 @@ export function QuestionForm({ initialData, onSubmit, isLoading }: QuestionFormP
       prompt_payload: {
         question: values.prompt,
         text: values.prompt,
-        options: values.question_kind.startsWith("mcq") ? cleanedOptions : [],
-        mcqOptions: values.question_kind.startsWith("mcq") ? cleanedOptions : [],
+        options: questionOptions,
+        mcqOptions: questionOptions,
+        ...(isWordAssembly ? { word_bank: questionOptions } : {}),
       },
       grading_payload: {
         correct_answer: values.correct_answer,
