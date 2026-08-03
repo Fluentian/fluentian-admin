@@ -69,6 +69,7 @@ export interface User {
   streak_days: number;
   hearts: number;
   daily_goal_minutes: number;
+  starting_unit_no: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;

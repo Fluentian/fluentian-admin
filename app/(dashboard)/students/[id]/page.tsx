@@ -1,13 +1,15 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useStudent, useStudentProgress } from "@/lib/hooks/useStudents";
+import { useEffect, useState } from 'react';
+import { useStudent, useStudentProgress, useUpdateStudent } from "@/lib/hooks/useStudents";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Mail, ShieldAlert, Award, Calendar } from "lucide-react";
 import { formatLevel, formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { Input } from "@/components/ui/input";
 
 export default function StudentDetailPage() {
   const params = useParams();
@@ -16,6 +18,12 @@ export default function StudentDetailPage() {
 
   const { data: student, isLoading: loadingStudent } = useStudent(id);
   const { data: progress, isLoading: loadingProgress } = useStudentProgress(id);
+  const updateStudent = useUpdateStudent();
+  const [startingChapter, setStartingChapter] = useState(1);
+
+  useEffect(() => {
+    if (student) setStartingChapter(student.starting_unit_no ?? 1);
+  }, [student]);
 
   if (loadingStudent) {
     return (
@@ -86,6 +94,31 @@ export default function StudentDetailPage() {
               <Button variant="outline" className="w-full justify-start gap-2 h-10">
                 <ShieldAlert size={16} className="text-text-muted" />
                 Moderate Account
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-none shadow-sm">
+            <CardHeader className="border-b">
+              <CardTitle className="text-[15px]">Learning placement</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-3">
+              <p className="text-[12px] text-text-muted">
+                Choose the first chapter on this learner&apos;s active journey. Earlier chapters remain available for review.
+              </p>
+              <Input
+                type="number"
+                min={1}
+                value={startingChapter}
+                onChange={(event) => setStartingChapter(Math.max(1, Number(event.target.value) || 1))}
+                aria-label="Starting chapter"
+              />
+              <Button
+                className="w-full"
+                disabled={updateStudent.isPending || startingChapter === student.starting_unit_no}
+                onClick={() => updateStudent.mutate({ id, data: { starting_unit_no: startingChapter } })}
+              >
+                {updateStudent.isPending ? 'Saving…' : `Start at chapter ${startingChapter}`}
               </Button>
             </CardContent>
           </Card>
