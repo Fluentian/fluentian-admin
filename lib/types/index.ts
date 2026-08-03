@@ -331,6 +331,8 @@ export interface OpportunityPost {
   description: string;
   type: string;
   deadline: string | null;
+  cta_url: string | null;
+  cta_label: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -340,6 +342,8 @@ export interface OpportunityCreate {
   description: string;
   type: string;
   deadline?: string;
+  cta_url?: string;
+  cta_label?: string;
 }
 
 // ── Stats (computed by admin, not DB table) ───────────────────

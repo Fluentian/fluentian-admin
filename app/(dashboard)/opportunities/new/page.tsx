@@ -19,7 +19,7 @@ export default function NewOpportunityPage() {
       router.push('/opportunities');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || "Failed to post opportunity");
+      toast.error(err.response?.data?.detail || err.response?.data?.message || "Failed to post opportunity");
     }
   });
 

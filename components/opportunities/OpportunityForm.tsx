@@ -19,6 +19,8 @@ const opportunitySchema = z.object({
   description: z.string().min(10),
   type: z.string().min(1, "Required"),
   deadline: z.string().optional(),
+  cta_url: z.union([z.literal(""), z.string().url("Enter a valid website URL")]).optional(),
+  cta_label: z.string().max(80, "CTA label must be 80 characters or fewer").optional(),
 });
 
 type OpportunityFormValues = z.infer<typeof opportunitySchema>;
@@ -44,6 +46,8 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
       description: initialData?.description ?? "",
       type: initialData?.type ?? "scholarship",
       deadline: initialData?.deadline ? new Date(initialData.deadline).toISOString().split('T')[0] : "",
+      cta_url: initialData?.cta_url ?? "",
+      cta_label: initialData?.cta_label ?? "",
     },
   });
 
@@ -63,7 +67,10 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
   const handleFormSubmit = (data: OpportunityFormValues) => {
     const finalData = {
       ...data,
-      type: isCustomType ? customTypeValue : data.type
+      type: isCustomType ? customTypeValue.trim() : data.type,
+      deadline: data.deadline || undefined,
+      cta_url: data.cta_url?.trim() || undefined,
+      cta_label: data.cta_label?.trim() || undefined,
     };
     onSubmit(finalData);
   };
@@ -151,6 +158,30 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
               />
             </div>
           )}
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="cta_url">CTA Website (Optional)</Label>
+              <Input
+                id="cta_url"
+                type="url"
+                placeholder="https://example.com/apply"
+                {...register("cta_url")}
+                className={errors.cta_url ? "border-danger" : ""}
+              />
+              {errors.cta_url && <p className="text-[12px] text-danger">{errors.cta_url.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cta_label">CTA Button Label (Optional)</Label>
+              <Input
+                id="cta_label"
+                placeholder="Apply on website"
+                {...register("cta_label")}
+                className={errors.cta_label ? "border-danger" : ""}
+              />
+              {errors.cta_label && <p className="text-[12px] text-danger">{errors.cta_label.message}</p>}
+            </div>
+          </div>
 
           <div className="flex items-center gap-4 pt-4">
             <Button type="submit" className="h-10 px-8" disabled={isLoading}>
