@@ -70,14 +70,14 @@ export function CourseForm({ initialData, onSubmit, isLoading }: CourseFormProps
   });
 
   const { data: languages, isLoading: isLoadingLangs } = useLanguages();
+  const french = languages?.find((language) => language.iso_code.toLowerCase() === 'fr');
 
-  // Auto-select French if available and no language is selected
+  // Fluentian always teaches French. Other languages explain the French lesson.
   useEffect(() => {
-    if (languages && !watch("target_language_id") && !initialData) {
-      const french = languages.find(l => l.iso_code === 'fr');
-      if (french) setValue("target_language_id", french.id);
+    if (french && watch("target_language_id") !== french.id) {
+      setValue("target_language_id", french.id);
     }
-  }, [languages, setValue, watch, initialData]);
+  }, [french, setValue, watch]);
 
   const levelMin = watch("level_min");
   const levelMax = watch("level_max");
@@ -136,23 +136,26 @@ export function CourseForm({ initialData, onSubmit, isLoading }: CourseFormProps
           </div>
 
           <div className="space-y-2">
-            <Label>Target Language</Label>
+            <Label>Language being taught</Label>
             <Select 
               value={watch("target_language_id")} 
               onValueChange={(val) => setValue("target_language_id", val)}
-              disabled={isLoadingLangs}
+              disabled={isLoadingLangs || Boolean(french)}
             >
               <SelectTrigger className={errors.target_language_id ? "border-danger" : ""}>
                 <SelectValue placeholder={isLoadingLangs ? "Loading languages..." : "Select language"} />
               </SelectTrigger>
               <SelectContent>
-                {languages?.map(lang => (
-                  <SelectItem key={lang.id} value={lang.id}>
-                    {lang.english_name} ({lang.native_name})
+                {french && (
+                  <SelectItem key={french.id} value={french.id}>
+                    French ({french.native_name})
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
+            <p className="text-[12px] leading-5 text-text-muted">
+              Fluentian teaches French. Add Amharic or Afaan Oromo explanations from each lesson&apos;s Languages tab.
+            </p>
             {errors.target_language_id && <p className="text-[12px] text-danger">{errors.target_language_id.message}</p>}
           </div>
 

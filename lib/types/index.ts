@@ -182,6 +182,38 @@ export interface Lesson {
   xp_reward: number;
   is_published: boolean;
   created_at: string;
+  description?: string;
+  content_language?: string;
+  translation_available?: boolean;
+}
+
+export interface LessonTranslation {
+  id: string;
+  lesson_id: string;
+  language_id: string;
+  language_code: string;
+  language_name: string;
+  title: string;
+  description: string;
+  block_translations: Record<string, Record<string, unknown>>;
+  question_translations: Record<string, {
+    prompt_payload?: Record<string, unknown>;
+    grading_payload?: Record<string, unknown>;
+  }>;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface LessonTranslationUpdate {
+  title: string;
+  description: string;
+  block_translations: Record<string, Record<string, unknown>>;
+  question_translations: Record<string, {
+    prompt_payload?: Record<string, unknown>;
+    grading_payload?: Record<string, unknown>;
+  }>;
+  is_published: boolean;
 }
 
 export interface LessonCreate {

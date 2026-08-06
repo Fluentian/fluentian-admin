@@ -7,7 +7,9 @@ import {
   LessonBlock, 
   LessonBlockCreate, 
   Question, 
-  QuestionCreate 
+  QuestionCreate,
+  LessonTranslation,
+  LessonTranslationUpdate,
 } from '@/lib/types';
 
 export const lessonsApi = {
@@ -61,5 +63,24 @@ export const lessonsApi = {
 
   deleteQuestion: async (questionId: string) => {
     await apiClient.delete(`/content/questions/${questionId}`);
+  },
+
+  getTranslations: async (lessonId: string) => {
+    const { data } = await apiClient.get<LessonTranslation[]>(
+      `/content/lessons/${lessonId}/translations`,
+    );
+    return data;
+  },
+
+  saveTranslation: async (
+    lessonId: string,
+    languageId: string,
+    data: LessonTranslationUpdate,
+  ) => {
+    const { data: response } = await apiClient.put<LessonTranslation>(
+      `/content/lessons/${lessonId}/translations/${languageId}`,
+      data,
+    );
+    return response;
   },
 };

@@ -18,6 +18,7 @@ import {
   DialogTitle 
 } from "@/components/ui/dialog";
 import { LessonBlock, Question } from '@/lib/types';
+import { LessonTranslationsEditor } from '@/components/lessons/LessonTranslationsEditor';
 
 export default function EditLessonPage() {
   const params = useParams();
@@ -155,6 +156,12 @@ export default function EditLessonPage() {
                 >
                   Quiz Questions
                 </TabsTrigger>
+                <TabsTrigger
+                  value="translations"
+                  className="px-6 py-2 text-[13px] font-semibold data-[state=active]:bg-primary data-[state=active]:text-white rounded-lg transition-all"
+                >
+                  Languages
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -175,6 +182,10 @@ export default function EditLessonPage() {
                 onDeleteQuestion={(questionId) => deleteQuestion({ questionId, lessonId: id })}
                 onEditQuestion={openEditQuestion}
               />
+            </TabsContent>
+
+            <TabsContent value="translations" className="mt-0 outline-none">
+              <LessonTranslationsEditor lesson={lesson} />
             </TabsContent>
           </Tabs>
         </main>
