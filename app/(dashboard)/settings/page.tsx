@@ -15,8 +15,9 @@ import { useAuthStore } from '@/lib/store/auth';
 import { useThemeStore } from '@/lib/store/theme';
 import { usersApi } from '@/lib/api/users';
 import { authApi } from '@/lib/api/auth';
+import { adminApi } from '@/lib/api/admin';
 import { getErrorMessage } from '@/lib/utils/api-error';
-import { User, Lock, Palette, Loader2 } from 'lucide-react';
+import { User, Lock, Palette, Loader2, Crown } from 'lucide-react';
 
 const profileSchema = z.object({
   displayName: z.string().min(1, 'Display name is required').max(100),
@@ -52,6 +53,11 @@ export default function SettingsPage() {
     null
   );
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  const isAdmin = authUser?.role === 'admin' || authUser?.role === 'super_admin';
+  const [founderBadgeEnabled, setFounderBadgeEnabled] = useState(false);
+  const [isLoadingPlatformSettings, setIsLoadingPlatformSettings] = useState(isAdmin);
+  const [isSavingFounderBadge, setIsSavingFounderBadge] = useState(false);
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -93,6 +99,43 @@ export default function SettingsPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    let cancelled = false;
+
+    async function loadPlatformSettings() {
+      try {
+        const settings = await adminApi.getPlatformSettings();
+        if (!cancelled) setFounderBadgeEnabled(settings.founder_badge_enabled);
+      } catch (error) {
+        if (!cancelled) toast.error(getErrorMessage(error));
+      } finally {
+        if (!cancelled) setIsLoadingPlatformSettings(false);
+      }
+    }
+
+    loadPlatformSettings();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
+
+  const onToggleFounderBadge = async (checked: boolean) => {
+    const previous = founderBadgeEnabled;
+    setFounderBadgeEnabled(checked);
+    setIsSavingFounderBadge(true);
+    try {
+      await adminApi.updatePlatformSettings({ founder_badge_enabled: checked });
+      toast.success(checked ? 'Founder badge enabled for new signups' : 'Founder badge disabled for new signups');
+    } catch (error) {
+      setFounderBadgeEnabled(previous);
+      toast.error(getErrorMessage(error));
+    } finally {
+      setIsSavingFounderBadge(false);
+    }
+  };
 
   const onProfileSubmit = async (values: ProfileFormValues) => {
     if (!savedProfile) return;
@@ -301,6 +344,41 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          {isAdmin && (
+            <Card className="border-none shadow-sm bg-card">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Crown size={18} className="text-primary" />
+                  <CardTitle className="text-[16px]">Platform</CardTitle>
+                </div>
+                <CardDescription>Site-wide settings that affect every user.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {isLoadingPlatformSettings ? (
+                  <div className="flex items-center justify-center py-8 text-muted-foreground">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5 pr-4">
+                      <p className="text-[14px] font-medium text-foreground">Founder badge</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        New signups get a Founder badge on their profile. Turning this off only
+                        stops future signups from getting it -- existing holders keep it.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={founderBadgeEnabled}
+                      onCheckedChange={onToggleFounderBadge}
+                      disabled={isSavingFounderBadge}
+                      aria-label="Toggle Founder badge for new signups"
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

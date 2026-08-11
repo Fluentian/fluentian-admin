@@ -364,6 +364,7 @@ export interface OpportunityPost {
   description: string;
   type: string;
   deadline: string | null;
+  image_url: string | null;
   cta_url: string | null;
   cta_label: string | null;
   is_active: boolean;
@@ -375,6 +376,7 @@ export interface OpportunityCreate {
   description: string;
   type: string;
   deadline?: string;
+  image_url?: string;
   cta_url?: string;
   cta_label?: string;
 }

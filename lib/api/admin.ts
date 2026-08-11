@@ -13,7 +13,13 @@ export interface UserAdminResponse {
   profile?: {
     display_name?: string;
     avatar_url?: string;
+    is_founder?: boolean;
   };
+}
+
+export interface PlatformSettings {
+  founder_badge_enabled: boolean;
+  updated_at: string;
 }
 
 export interface CreateUserPayload {
@@ -80,6 +86,20 @@ export const adminApi = {
   resetUserPassword: async (userId: string) => {
     const { data } = await apiClient.post<{ message: string }>(
       `/admin/users/${userId}/reset-password`
+    );
+    return data;
+  },
+
+  // Platform-wide settings
+  getPlatformSettings: async () => {
+    const { data } = await apiClient.get<PlatformSettings>('/admin/platform-settings');
+    return data;
+  },
+
+  updatePlatformSettings: async (payload: Partial<PlatformSettings>) => {
+    const { data } = await apiClient.patch<PlatformSettings>(
+      '/admin/platform-settings',
+      payload
     );
     return data;
   },

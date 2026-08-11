@@ -10,15 +10,18 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, ImageIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { mediaApi } from "@/lib/api/media";
+import { toast } from "sonner";
 
 const opportunitySchema = z.object({
   title: z.string().min(3).max(100),
   description: z.string().min(10),
   type: z.string().min(1, "Required"),
   deadline: z.string().optional(),
+  image_url: z.string().optional(),
   cta_url: z.union([z.literal(""), z.string().url("Enter a valid website URL")]).optional(),
   cta_label: z.string().max(80, "CTA label must be 80 characters or fewer").optional(),
 });
@@ -46,6 +49,7 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
       description: initialData?.description ?? "",
       type: initialData?.type ?? "scholarship",
       deadline: initialData?.deadline ? new Date(initialData.deadline).toISOString().split('T')[0] : "",
+      image_url: initialData?.image_url ?? "",
       cta_url: initialData?.cta_url ?? "",
       cta_label: initialData?.cta_label ?? "",
     },
@@ -53,8 +57,25 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
 
   const [isCustomType, setIsCustomType] = useState(false);
   const [customTypeValue, setCustomTypeValue] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const type = watch("type");
+  const imageUrl = watch("image_url");
+
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setIsUploadingImage(true);
+    try {
+      const asset = await mediaApi.upload(file);
+      setValue("image_url", asset.url);
+    } catch (error) {
+      toast.error("Could not upload image. Please try again.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
 
   useEffect(() => {
     if (initialData && !['scholarship', 'internship', 'event', 'job'].includes(initialData.type)) {
@@ -69,6 +90,7 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
       ...data,
       type: isCustomType ? customTypeValue.trim() : data.type,
       deadline: data.deadline || undefined,
+      image_url: data.image_url?.trim() || undefined,
       cta_url: data.cta_url?.trim() || undefined,
       cta_label: data.cta_label?.trim() || undefined,
     };
@@ -100,6 +122,45 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
               className={errors.description ? "border-danger" : ""}
             />
             {errors.description && <p className="text-[12px] text-danger">{errors.description.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Image (optional)</Label>
+            {imageUrl ? (
+              <div className="relative w-full max-w-[280px]">
+                <img
+                  src={imageUrl}
+                  alt=""
+                  className="h-40 w-full rounded-lg border object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => setValue("image_url", "")}
+                  className="absolute right-2 top-2 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
+                  aria-label="Remove image"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <label className="flex h-28 w-full max-w-[280px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-muted-foreground hover:border-primary hover:text-primary">
+                {isUploadingImage ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <ImageIcon size={20} />
+                    <span className="text-[12px]">Click to upload an image</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  disabled={isUploadingImage}
+                  onChange={handleImageSelect}
+                />
+              </label>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-6">
