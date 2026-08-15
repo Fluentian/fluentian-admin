@@ -245,8 +245,8 @@ export function OpportunityForm({ initialData, onSubmit, isLoading }: Opportunit
           </div>
 
           <div className="flex items-center gap-4 pt-4">
-            <Button type="submit" className="h-10 px-8" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Post Opportunity"}
+            <Button type="submit" className="h-10 px-8" disabled={isLoading || isUploadingImage}>
+              {isLoading || isUploadingImage ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Post Opportunity"}
             </Button>
             <Button type="button" variant="ghost" onClick={() => router.back()}>
               Cancel
