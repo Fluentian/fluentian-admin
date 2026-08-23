@@ -29,6 +29,7 @@ import { useState } from "react";
 import { UnitForm } from "@/components/courses/UnitForm";
 import { useCreateUnit } from "@/lib/hooks/useCourses";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { MetadataTranslationsEditor } from "@/components/courses/MetadataTranslationsEditor";
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -87,6 +88,8 @@ export default function CourseDetailPage() {
         </Button>
       </PageHeader>
 
+      <MetadataTranslationsEditor ownerType="course" ownerId={id} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Units & Lessons */}
         <div className="lg:col-span-2 space-y-4">
@@ -136,6 +139,7 @@ export default function CourseDetailPage() {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-6 pt-2">
+                      <MetadataTranslationsEditor ownerType="unit" ownerId={unit.id} />
                       <div className="space-y-2">
                         {unitLessons.length > 0 ? (
                           unitLessons.sort((a,b) => a.sequence_no - b.sequence_no).map((lesson) => (

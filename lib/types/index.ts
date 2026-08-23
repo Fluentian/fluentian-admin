@@ -121,6 +121,28 @@ export interface Course {
   level_max: ProficiencyLevel;
   is_published: boolean;
   created_at: string;
+  title?: string | null;
+  description?: string;
+}
+
+export interface MetadataTranslation {
+  id: string;
+  course_id?: string;
+  unit_id?: string;
+  language_id: string;
+  language_code: string;
+  language_name: string;
+  title: string;
+  description: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string | null;
+}
+
+export interface MetadataTranslationUpdate {
+  title: string;
+  description: string;
+  is_published: boolean;
 }
 
 export interface CourseCreate {
@@ -154,6 +176,7 @@ export interface PathUnit {
   unit_no: number;
   title: string;
   created_at: string;
+  description?: string;
 }
 
 export interface PathUnitCreate {
