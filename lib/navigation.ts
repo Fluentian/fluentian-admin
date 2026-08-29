@@ -10,6 +10,7 @@ import {
   HelpCircle,
   Compass,
   Radio,
+  FileText,
 } from 'lucide-react';
 import type { AppRole } from '@/lib/types';
 
@@ -49,6 +50,8 @@ export const sidebarNavItems: SidebarNavItem[] = [
   {
     label: 'Live Rooms', href: '/live-rooms', icon: Radio, section: 'COMMUNITY', roles: ['super_admin', 'admin'],
   },
+  { label: 'AI Call Reports', href: '/ai-call-reports', icon: FileText, section: 'COMMUNITY', roles: ['super_admin', 'admin'] },
+  { label: 'AI Scenarios', href: '/ai-scenarios', icon: FileText, section: 'CONTENT', roles: ['super_admin', 'admin', 'teacher'] },
   {
     label: 'Students',
     href: '/students',

@@ -45,6 +45,13 @@ export interface UsersListResponse {
 }
 
 export const adminApi = {
+  listAiScenarios: async () => (await apiClient.get('/admin/ai-scenarios')).data,
+  createAiScenario: async (payload: Record<string, unknown>) => (await apiClient.post('/admin/ai-scenarios', payload)).data,
+  updateAiScenario: async (id: string, payload: Record<string, unknown>) => (await apiClient.patch(`/admin/ai-scenarios/${id}`, payload)).data,
+  listAiCallReports: async (limit = 50) => {
+    const { data } = await apiClient.get('/admin/ai-call-reports', { params: { limit } });
+    return data;
+  },
   // User Management
   createUser: async (payload: CreateUserPayload) => {
     const { data } = await apiClient.post<UserAdminResponse>('/admin/users', payload);
