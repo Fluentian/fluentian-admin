@@ -57,6 +57,19 @@ export interface AnalyticsOverview {
   };
 }
 
+export interface OfflinePerformance {
+  lesson_open_count: number;
+  p95_lesson_open_latency_ms: number;
+  estimated_bytes: number;
+  cache_layer_hits: Record<string, number>;
+  cache_hit_ratio: number;
+}
+
+export async function getOfflinePerformance(): Promise<OfflinePerformance> {
+  const { data } = await apiClient.get<OfflinePerformance>('/analytics/offline-performance');
+  return data;
+}
+
 // ── Engagement ─────────────────────────────────────────────────────────
 
 export interface AnalyticsEngagement {
