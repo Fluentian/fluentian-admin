@@ -32,7 +32,8 @@ const processQueue = (_error: any, _token: string | null = null) => {
   failedQueue = [];
 };
 
-// Request interceptor: attach Bearer token and handle AbortController
+// Request interceptor: attach the Bearer token. Callers retain control of any
+// AbortSignal they pass, so component unmounts and user cancellation work.
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
   
@@ -56,8 +57,6 @@ apiClient.interceptors.request.use((config) => {
   const startTime = logRequest(config.method?.toUpperCase() || 'GET', config.url || '');
   (config as any)._startTime = startTime;
   
-  // Add AbortSignal for cleanup on unmount
-  config.signal = new AbortController().signal;
   return config;
 });
 

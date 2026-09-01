@@ -1,11 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Menu } from 'lucide-react';
 import { useAuthStore } from '@/lib/store/auth';
 import { getRoleLabel } from '@/lib/rbac';
 
-export function Topbar() {
+export function Topbar({ onOpenMenu }: { onOpenMenu?: () => void }) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
 
@@ -25,13 +25,18 @@ export function Topbar() {
   });
 
   return (
-    <header className="h-[56px] bg-white border-b border-border flex items-center justify-between px-8 sticky top-0 z-40">
-      <div className="flex items-center text-[13px]">
+    <header className="h-[56px] bg-white border-b border-border flex items-center justify-between px-4 sm:px-8 sticky top-0 z-40">
+      <div className="flex min-w-0 items-center text-[13px]">
+        <button type="button" onClick={onOpenMenu} className="mr-3 rounded-md p-2 hover:bg-gray-100 md:hidden" aria-label="Open navigation">
+          <Menu size={20} />
+        </button>
+        <div className="hidden min-w-0 items-center sm:flex">
         {breadcrumbs}
+        </div>
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex flex-col items-end mr-1">
+        <div className="hidden flex-col items-end mr-1 sm:flex">
           <span className="text-[13px] font-semibold text-text-primary">{user?.username ?? 'Admin'}</span>
           <span className="text-[11px] text-text-muted">{getRoleLabel(user?.role)}</span>
         </div>

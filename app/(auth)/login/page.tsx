@@ -60,7 +60,10 @@ export default function LoginPage() {
       login(response);
       
       // Set cookie for middleware
-      Cookies.set('accessToken', response.access_token, { expires: 1 });
+      Cookies.set('accessToken', response.access_token, {
+        secure: window.location.protocol === 'https:',
+        sameSite: 'strict',
+      });
       
       router.push(getDefaultRouteForRole(response.user.role));
     } catch (err: unknown) {

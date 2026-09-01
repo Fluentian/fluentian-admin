@@ -35,14 +35,14 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-xl border bg-white overflow-hidden shadow-sm">
-      <Table>
+    <div className="max-w-full overflow-x-auto rounded-xl border bg-white shadow-sm" role="region" aria-label="Data table" tabIndex={0}>
+      <Table className="min-w-[720px]">
         <TableHeader className="bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent border-b">
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="h-12 px-6 table-header">
+                  <TableHead key={header.id} className="h-12 whitespace-nowrap px-4 sm:px-6 table-header">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({
             Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i} className="hover:bg-transparent border-b last:border-0">
                 {columns.map((_, j) => (
-                  <TableCell key={j} className="px-6 py-4">
+                  <TableCell key={j} className="px-4 py-4 sm:px-6">
                     <div className="h-4 bg-gray-100 rounded animate-pulse w-full" />
                   </TableCell>
                 ))}
@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
                 className="hover:bg-background border-b last:border-0 transition-colors"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="px-6 py-4 text-text-primary">
+                  <TableCell key={cell.id} className="whitespace-nowrap px-4 py-4 text-text-primary sm:px-6">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

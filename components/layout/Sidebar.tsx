@@ -10,7 +10,7 @@ import Cookies from 'js-cookie';
 import { sidebarNavItems, navItemVisible } from '@/lib/navigation';
 import { getRoleLabel } from '@/lib/rbac';
 
-export function Sidebar() {
+export function Sidebar({ className, onNavigate }: { className?: string; onNavigate?: () => void }) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -33,6 +33,7 @@ export function Sidebar() {
       <Link
         key={item.href}
         href={item.href}
+        onClick={onNavigate}
         className={cn(
           'flex items-center gap-3 h-10 px-3 rounded-md mb-1 transition-colors group',
           isActive
@@ -54,7 +55,7 @@ export function Sidebar() {
   const sections = ['CONTENT', 'COMMUNITY', 'ADMINISTRATION'] as const;
 
   return (
-    <div className="w-[240px] h-screen bg-primary-dark flex flex-col fixed left-0 top-0 z-50">
+    <aside className={cn("w-[240px] h-screen bg-primary-dark flex flex-col fixed left-0 top-0 z-50", className)} aria-label="Admin navigation">
       <div className="p-6">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
@@ -94,6 +95,7 @@ export function Sidebar() {
       <div className="p-3 border-t border-white/5">
         <Link
           href="/settings"
+          onClick={onNavigate}
           className={cn(
             'flex items-center gap-3 h-10 px-3 rounded-md mb-1 transition-colors group',
             pathname === '/settings'
@@ -131,6 +133,6 @@ export function Sidebar() {
           </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

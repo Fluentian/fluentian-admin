@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { User, TokenResponse } from '@/lib/types';
 import Cookies from 'js-cookie';
 
@@ -56,6 +56,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'fluentian-admin-auth',
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

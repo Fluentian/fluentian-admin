@@ -4,7 +4,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { RouteGuard } from "@/components/auth/RouteGuard";
 import { useAuthStore } from "@/lib/store/auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -16,6 +16,7 @@ export default function DashboardLayout({
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // Wait for Zustand hydration before checking auth
@@ -41,10 +42,16 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-[var(--bg-page)]">
-      <Sidebar />
-      <div className="flex-1 ml-[240px]">
-        <Topbar />
-        <main className="p-8 pb-12">
+      <Sidebar className="hidden md:flex" />
+      {menuOpen && (
+        <>
+          <button className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />
+          <Sidebar className="flex md:hidden" onNavigate={() => setMenuOpen(false)} />
+        </>
+      )}
+      <div className="min-w-0 flex-1 md:ml-[240px]">
+        <Topbar onOpenMenu={() => setMenuOpen(true)} />
+        <main className="p-4 pb-12 sm:p-6 lg:p-8">
           <div className="max-w-[1200px] mx-auto">
             <RouteGuard>{children}</RouteGuard>
           </div>
