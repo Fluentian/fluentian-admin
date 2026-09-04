@@ -6,7 +6,7 @@ import { Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/store/auth';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
+import { clearAccessCookie } from '@/lib/auth-cookie';
 import { sidebarNavItems, navItemVisible } from '@/lib/navigation';
 import { getRoleLabel } from '@/lib/rbac';
 
@@ -18,7 +18,7 @@ export function Sidebar({ className, onNavigate }: { className?: string; onNavig
 
   const handleLogout = () => {
     logout();
-    Cookies.remove('accessToken');
+    clearAccessCookie();
     router.push('/login');
   };
 

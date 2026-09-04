@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '@/lib/store/auth';
+import { setAccessCookie, clearAccessCookie } from '@/lib/auth-cookie';
 import { logRequest, logResponse, logError } from '@/lib/middleware/logger';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/middleware/rate-limiter';
-import { isTokenExpired, isTokenExpiringSoon } from '@/lib/utils/jwt';
 
 // Validate API URL is configured
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1';
@@ -36,19 +36,11 @@ const processQueue = (_error: any, _token: string | null = null) => {
 // AbortSignal they pass, so component unmounts and user cancellation work.
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
-  
-  // Check if token is expired
-  if (token && isTokenExpired(token)) {
-    console.warn('⏱️ Token has expired. Logging out...');
-    useAuthStore.getState().logout();
-    return Promise.reject(new Error('Token has expired'));
-  }
-  
-  // Warn if token is expiring soon (within 5 minutes)
-  if (token && isTokenExpiringSoon(token)) {
-    console.warn('⏱️ Token expiring soon - consider refreshing');
-  }
-  
+
+  // An expired access token is NOT a reason to log out here. This used to call
+  // logout() and reject, which fired every 15 minutes and made the refresh
+  // machinery in the response interceptor below unreachable. Send the request
+  // anyway: the 401 handler will rotate the token and retry once.
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -111,12 +103,14 @@ apiClient.interceptors.response.use(
           refresh_token: refreshToken,
         });
         useAuthStore.getState().login(data);
+        setAccessCookie(data.access_token);
         processQueue(null, data.access_token);
         originalRequest.headers = originalRequest.headers ?? {};
         originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
         return apiClient(originalRequest);
       } catch (err) {
         processQueue(err, null);
+        clearAccessCookie();
         useAuthStore.getState().logout();
         if (typeof window !== 'undefined') {
           window.location.href = '/login';

@@ -6,7 +6,7 @@ import { RouteGuard } from "@/components/auth/RouteGuard";
 import { useAuthStore } from "@/lib/store/auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+import { clearAccessCookie } from '@/lib/auth-cookie';
 
 export default function DashboardLayout({
   children,
@@ -23,7 +23,7 @@ export default function DashboardLayout({
     if (!isHydrated) return;
 
     if (!isAuthenticated) {
-      Cookies.remove('accessToken');
+      clearAccessCookie();
       router.push('/login');
     }
   }, [isAuthenticated, isHydrated, router]);

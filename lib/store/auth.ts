@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { User, TokenResponse } from '@/lib/types';
-import Cookies from 'js-cookie';
+import { setAccessCookie, clearAccessCookie } from '@/lib/auth-cookie';
 
 interface AuthState {
   user: User | null;
@@ -24,23 +24,16 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isHydrated: false,
       login: (data) => {
-        // Use httpOnly cookies (set via middleware)
-        // Only store tokens in secure cookie (backend should set httpOnly flag)
-        Cookies.set('accessToken', data.access_token, {
-          expires: 1, // 24 hours
-          secure: typeof window !== 'undefined' && window.location.protocol === 'https:',
-          sameSite: 'strict',
-        });
-        
+        setAccessCookie(data.access_token);
         set({
           user: data.user,
           accessToken: data.access_token,
-          refreshToken: data.refresh_token, // Should ideally only be in httpOnly cookie
+          refreshToken: data.refresh_token,
           isAuthenticated: true,
         });
       },
       logout: () => {
-        Cookies.remove('accessToken');
+        clearAccessCookie();
         set({
           user: null,
           accessToken: null,
@@ -57,9 +50,13 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'fluentian-admin-auth',
       storage: createJSONStorage(() => sessionStorage),
+      // refreshToken is deliberately absent: it is a year-long credential and
+      // was being written to sessionStorage, so any XSS on the console handed
+      // an attacker a durable session. It now lives only in memory for the
+      // life of the tab -- refresh still works while the tab is open, and a
+      // reload falls back to the short-lived access token, then re-login.
       partialize: (state) => ({
         accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),

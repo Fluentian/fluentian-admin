@@ -14,7 +14,6 @@ import { Card, CardContent, CardHeader, CardDescription } from '@/components/ui/
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Eye, EyeOff, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import { getDefaultRouteForRole } from '@/lib/rbac';
 
 const loginSchema = z.object({
@@ -57,13 +56,10 @@ export default function LoginPage() {
         return;
       }
 
+      // login() already writes the middleware cookie through the single
+      // helper; this used to re-set it with different options, so the
+      // effective lifetime depended on which call ran last.
       login(response);
-      
-      // Set cookie for middleware
-      Cookies.set('accessToken', response.access_token, {
-        secure: window.location.protocol === 'https:',
-        sameSite: 'strict',
-      });
       
       router.push(getDefaultRouteForRole(response.user.role));
     } catch (err: unknown) {
